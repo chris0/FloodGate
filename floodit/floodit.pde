@@ -1,7 +1,7 @@
-color[] colors;      // 1D array of 6 colors
-color[][] cArray;    // 2D array of colors
-boolean[][] sArray;  // 2D array of true/false switches
-                     // true/false stands for on/off
+import ddf.minim.*;
+
+Minim minim;
+AudioPlayer bgm, blip, door;
 int hp;              // a variable to keep track of currency
 int fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
@@ -25,30 +25,25 @@ color C4 = color(102);
 color C5 = color(51);
 color C6 = color(0);
 
-var bgm = new Howl({
-  urls: ['music/DarkMystery.mp3', 'music/DarkMystery.ogg'],
-  loop: true,
-});
-
-var blip = new Howl({
-  urls: ['music/sfx.mp3', 'music/sfx.ogg'],
-  loop: false,
-});
-
-var door = new Howl({
-  urls: ['music/door.mp3', 'music/door.ogg'],
-  loop: false,
-});
-
+color[] colors = {C1, C2, C3, C4, C5, C6};      // 1D array of 6 colors
+color[][] cArray;    // 2D array of colors
+boolean[][] sArray;  // 2D array of true/false switches
+                     // true/false stands for on/off
 color lastC2;
 
 // Checks whether a number is between a range to simplify code
+/*
 Number.prototype.between = function (min, max) {
     return this > min && this < max;
-}; 
+;} 
+*/
 
 void setup() {
   size(340, 420);
+  minim = new Minim(this);
+  bgm = minim.loadFile("DarkMystery.mp3");
+  blip = minim.loadFile("sfx.mp3");
+  door = minim.loadFile("door.mp3");
   bgm.play();
   pcles = new ArrayList();
     
@@ -56,7 +51,7 @@ void setup() {
   color c;
   
   noCursor();
-  colors = {C1, C2, C3, C4, C5, C6};
+  fingerOffset = 0;
   cArray = new int[6][6];
   sArray = new boolean[6][6];
   sShake = new int[4];
@@ -64,12 +59,13 @@ void setup() {
 
 void mousePressed() {
   if (gameState == 0 || gameState == 2) {
-    if (mouseX.between(130,205) && mouseY.between(185,215)){
+    //if (mouseX.between(130,205) && mouseY.between(185,215)){
+    if(mouseX>130 && mouseX<205 && mouseY>185 && mouseY<215) {
       switchMode();
-      for(i = 0; i < cArray.length; i++) {
-        for(j = 0; j < cArray[i].length; j++) {
-          b = int(random(6));
-          c = colors[b];
+      for(int i = 0; i < cArray.length; i++) {
+        for(int j = 0; j < cArray[i].length; j++) {
+          int b = int(random(6));
+          color c = colors[b];
           cArray[i][j] = c;
           sArray[i][j] = false;
         }
@@ -80,16 +76,17 @@ void mousePressed() {
       sArray[0][0] = true;
     }
     
-    if (mouseX.between(130,205) && mouseY.between(255,285)){
+    //if (mouseX.between(130,205) && mouseY.between(255,285)){
+    if(mouseX>130 && mouseX<205 && mouseY>255 && mouseY<285) {
       C1 = color(255);
       C2 = color(204);
       C3 = color(153);
       C4 = color(102);
       C5 = color(51);
-      for(i = 0; i < cArray.length; i++) {
-        for(j = 0; j < cArray[i].length; j++) {
-          b = int(random(6));
-          c = colors[b];
+      for(int i = 0; i < cArray.length; i++) {
+        for(int j = 0; j < cArray[i].length; j++) {
+          int b = int(random(6));
+          color c = colors[b];
           cArray[i][j] = c;
           sArray[i][j] = false;
         }
@@ -101,10 +98,12 @@ void mousePressed() {
     }
   }
   if (gameState == 3) {
-    if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
+    //if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
+    if(mouseX>130 && mouseX<205 && mouseY>375 && mouseY<450 && tutLevel == 1) {gameState = 0;}
     fingerPress = 30;
     blip.play();
-    if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
+    //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
+    if(tutLevel == 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
       color c, f;   
         
       f = get(mouseX, mouseY);
@@ -152,7 +151,8 @@ void mousePressed() {
         step += round(hp/2);
         hp = 0;
     }
-    if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
+    //if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
+    if(cutscene >= 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
       color c, f;   
         
       f = get(mouseX, mouseY);
@@ -201,7 +201,7 @@ void mousePressed() {
    a value of true. A neighbor must have a value of true for the cell to change
    color, since the color must be connected to the tree of cells that are connected
    to the root (the upper left cell). */
-boolean checkNeighbor(xpos, ypos) {
+boolean checkNeighbor(int xpos, int ypos) {
   if( (xpos > 0) && (sArray[xpos - 1][ypos]) == true) {
     return true;
   }
@@ -214,10 +214,11 @@ boolean checkNeighbor(xpos, ypos) {
   if( (ypos < sArray.length - 1) && (sArray[xpos][ypos + 1] == true) ) {
     return true;
   }
+  return false;
 }
 
 void draw() {
-  highScore = $.jStorage.get("fgHighScore", 0);
+  //highScore = $.jStorage.get("fgHighScore", 0);
     
   textSize(14);
     
@@ -239,18 +240,18 @@ void draw() {
         fill(0);
         stroke(0);
         rect(90,90,160,160);
-        for(i = 0; i < cArray.length; i++) {
-          for(j = 0; j < cArray[i].length; j++) {
-            n = cArray[i][j];
-            c = colors[n];
+        for(int i = 0; i < cArray.length; i++) {
+          for(int j = 0; j < cArray[i].length; j++) {
+            int n = cArray[i][j];
+            color c = colors[n];
             stroke(n);
             fill(n);
             rect(i*25+95, j*25+95, 25, 25);
           }
         }
         int helpAllCheck = 0;
-        for(i = 0; i < cArray.length; i++) {
-          for(j = 0; j < cArray[i].length; j++) {
+        for(int i = 0; i < cArray.length; i++) {
+          for(int j = 0; j < cArray[i].length; j++) {
             if (cArray[i][j] == cArray[0][0]) {
               helpAllCheck += 1;
             }
@@ -358,8 +359,8 @@ void draw() {
       if (doorMode == 2) {
         step -= 1/60;
       }
-      if (fingerOffset > 0) {fingerOffset -= (500/60)};
-      if (fingerOffset < 0) {fingerOffset = 0};
+      if (fingerOffset > 0) {fingerOffset -= (500/60);}
+      if (fingerOffset < 0) {fingerOffset = 0;}
       rect(90,90,160,160);
       rect(165,0,10,400);
       rect(0,395,340,10);
@@ -368,10 +369,10 @@ void draw() {
       rect(105,65,130,20);  
       fill(30);
       text(round(step),165,82);
-      for(i = 0; i < cArray.length; i++) {
-        for(j = 0; j < cArray[i].length; j++) {
-          n = cArray[i][j];
-          c = colors[n];
+      for(int i = 0; i < cArray.length; i++) {
+        for(int j = 0; j < cArray[i].length; j++) {
+          int n = cArray[i][j];
+          //color c = colors[n];
           stroke(n);
           fill(n);
           rect(i*25+95, j*25+95, 25, 25);
@@ -415,12 +416,13 @@ void draw() {
     strokeWeight(1);
     finger();
     checkEndGame();
-    
+    /*
     for (int i=pcles.size()-1; i>=0; i--) {
       Particle p = (Pcle) pcles.get(i);
       p.update();
       if (p.fa < 0) {pcles.remove(i);}
     }
+    */
     //text(mouseX + "," + mouseY,mouseX,mouseY);
   }
   
@@ -428,8 +430,8 @@ void draw() {
 
 void checkEndGame() {
   int allCheck = 0;
-  for(i = 0; i < cArray.length; i++) {
-    for(j = 0; j < cArray[i].length; j++) {
+  for(int i = 0; i < cArray.length; i++) {
+    for(int j = 0; j < cArray[i].length; j++) {
       if (cArray[i][j] == cArray[0][0]) {
         allCheck += 1;
       }
@@ -446,10 +448,10 @@ void checkEndGame() {
     sShake[2] = 0;
     sShake[3] = 0;
     switchMode();
-    for(i = 0; i < cArray.length; i++) {
-      for(j = 0; j < cArray[i].length; j++) {
-        b = int(random(6));
-        c = colors[b];
+    for(int i = 0; i < cArray.length; i++) {
+      for(int j = 0; j < cArray[i].length; j++) {
+        int b = int(random(6));
+        color c = colors[b];
         cArray[i][j] = c;
         sArray[i][j] = false;
       }
@@ -459,14 +461,14 @@ void checkEndGame() {
   if(step <= 0 && allCheck < 36) {
     score += hp;
     hp = 0;
-    if (score > highScore) {$.jStorage.set("fgHighScore", score);}
+    //if (score > highScore) {$.jStorage.set("fgHighScore", score);}
     gameState = 2;
   }
 }
 
 void switchMode() {
   lastC2 = C2;
-  doorMode = chance.pick([0,1,2]);
+  doorMode = int(random(3));
   C6 = color(0);
   switch(doorMode) {
   case 0:
@@ -496,12 +498,12 @@ void switchMode() {
     C5 = color(51,0,0);
     break;
   }
-  colors = {C1, C2, C3, C4, C5, C6};
+  //colors = {C1, C2, C3, C4, C5, C6;}
 }
 
 void finger() {
-  if (fingerPress > 0) {fingerPress -= 1};
-  if (fingerPress < 0) {fingerPress = 0};
+  if (fingerPress > 0) {fingerPress -= 1;}
+  if (fingerPress < 0) {fingerPress = 0;}
   fill(150);
   stroke(150);
   ellipse(mouseX+30 - (fingerPress - fingerOffset),mouseY+30 - (fingerPress - fingerOffset),30,30);
@@ -575,15 +577,15 @@ void cutsceneAnim() {
   
   if (cutscene <= 200) {
     
-    if (sShake[0] == 0) {sShake[1] -= 0.9};
-    if (sShake[1] < -11.1 && sShake[0] == 0) {sShake[0] = 1};
-    if (sShake[0] == 1) {sShake[1] += 0.9};
-    if (sShake[1] > 11.1 && sShake[0] == 1) {sShake[0] = 0};  
+    if (sShake[0] == 0) {sShake[1] -= 0.9;}
+    if (sShake[1] < -11.1 && sShake[0] == 0) {sShake[0] = 1;}
+    if (sShake[0] == 1) {sShake[1] += 0.9;}
+    if (sShake[1] > 11.1 && sShake[0] == 1) {sShake[0] = 0;}  
       
-    if (sShake[2] == 0) {sShake[3] -= 1};
-    if (sShake[3] <= 0 && sShake[2] == 0) {sShake[2] = 1};
-    if (sShake[2] == 1) {sShake[3] += 1};
-    if (sShake[3] > 11 && sShake[2] == 1) {sShake[2] = 0};  
+    if (sShake[2] == 0) {sShake[3] -= 1;}
+    if (sShake[3] <= 0 && sShake[2] == 0) {sShake[2] = 1;}
+    if (sShake[2] == 1) {sShake[3] += 1;}
+    if (sShake[3] > 11 && sShake[2] == 1) {sShake[2] = 0;}  
       
     fill(C2);
     stroke(30);
@@ -625,10 +627,10 @@ void cutsceneAnim() {
     text(round(step),165 + 5*(cutscene/200) + sShake[1],82 + 88*(cutscene/200) + sShake[3]);
     textSize(14);
     
-    for(i = 0; i < cArray.length; i++) {
-      for(j = 0; j < cArray[i].length; j++) {
-        n = cArray[i][j];
-        c = colors[n];
+    for(int i = 0; i < cArray.length; i++) {
+      for(int j = 0; j < cArray[i].length; j++) {
+        int n = cArray[i][j];
+        float c = colors[n];
         stroke(n);
         fill(n);
         rect(i*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[1], j*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[3], 25 - 25*(cutscene/200), 25 - 25*(cutscene/200));
@@ -649,7 +651,7 @@ class Pcle {
   float a;
   float fa;
  
-  Pcle(ox,oy,or,og,ob,oa,os) {
+  void Pcle(float ox, float oy, float or, float og, float ob, float oa, float os) {
     x = ox;
     y = oy;
     r = or;
