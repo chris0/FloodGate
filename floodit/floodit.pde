@@ -15,7 +15,7 @@ int step;
 int doorMode;
 int tutLevel;
 
-ArrayList pcles;
+ArrayList<Pcle> pcles =  new ArrayList<Pcle>();
 
 // Color assignments
 color C1 = color(255);
@@ -45,7 +45,6 @@ void setup() {
   blip = minim.loadFile("sfx.mp3");
   door = minim.loadFile("door.mp3");
   bgm.play();
-  pcles = new ArrayList();
     
   int b, i, j;
   color c;
@@ -243,7 +242,7 @@ void draw() {
         for(int i = 0; i < cArray.length; i++) {
           for(int j = 0; j < cArray[i].length; j++) {
             int n = cArray[i][j];
-            color c = colors[n];
+            // color c = colors[n];
             stroke(n);
             fill(n);
             rect(i*25+95, j*25+95, 25, 25);
@@ -416,13 +415,13 @@ void draw() {
     strokeWeight(1);
     finger();
     checkEndGame();
-    /*
+
     for (int i=pcles.size()-1; i>=0; i--) {
-      Particle p = (Pcle) pcles.get(i);
+      Pcle p = pcles.get(i);
       p.update();
       if (p.fa < 0) {pcles.remove(i);}
     }
-    */
+
     //text(mouseX + "," + mouseY,mouseX,mouseY);
   }
   
