@@ -46,8 +46,8 @@ void setup() {
   door = minim.loadFile("door.mp3");
   bgm.play();
     
-  int b, i, j;
-  color c;
+  //int b, i, j;
+  //color c;
   
   noCursor();
   fingerOffset = 0;
@@ -103,7 +103,7 @@ void mousePressed() {
     blip.play();
     //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(tutLevel == 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
-      color c, f;   
+      color f;  //color c, f;   
         
       f = get(mouseX, mouseY);
         
@@ -152,7 +152,7 @@ void mousePressed() {
     }
     //if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(cutscene >= 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
-      color c, f;   
+      color f; //color c, f;   
         
       f = get(mouseX, mouseY);
       
@@ -503,6 +503,8 @@ void switchMode() {
 void finger() {
   if (fingerPress > 0) {fingerPress -= 1;}
   if (fingerPress < 0) {fingerPress = 0;}
+  noFill();
+  ellipse(mouseX, mouseY, 4, 4);
   fill(150);
   stroke(150);
   ellipse(mouseX+30 - (fingerPress - fingerOffset),mouseY+30 - (fingerPress - fingerOffset),30,30);
@@ -629,7 +631,7 @@ void cutsceneAnim() {
     for(int i = 0; i < cArray.length; i++) {
       for(int j = 0; j < cArray[i].length; j++) {
         int n = cArray[i][j];
-        float c = colors[n];
+        //float c = colors[n];
         stroke(n);
         fill(n);
         rect(i*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[1], j*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[3], 25 - 25*(cutscene/200), 25 - 25*(cutscene/200));
