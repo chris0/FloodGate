@@ -1,7 +1,19 @@
-//import ddf.minim.*;
+import android.app.Activity;
+import android.content.res.AssetFileDescriptor;
+import android.content.Context;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.media.AudioManager;
 
-//Minim minim;
-//AudioPlayer bgm, blip, door;
+MediaPlayer bgm;
+SoundPool soundPool;
+HashMap soundPoolMap;
+Activity act;
+Context cont;
+AssetFileDescriptor music, sound1, sound2;
+
+String musicPath;
+int s1, s2;
 int hp;              // a variable to keep track of currency
 int fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
@@ -40,15 +52,25 @@ Number.prototype.between = function (min, max) {
 
 void setup() {
   size(340, 420);
-  //minim = new Minim(this);
-  //bgm = minim.loadFile("DarkMystery.mp3");
-  //blip = minim.loadFile("sfx.mp3");
-  //door = minim.loadFile("door.mp3");
-  //bgm.play();
-    
+  act = this.getActivity();
+  cont = act.getApplicationContext();
+  try {
+    bgm = new MediaPlayer();    
+    music = cont.getAssets().openFd("DarkMystery.mp3");    
+    sound1 = cont.getAssets().openFd("door.mp3");
+    sound2 = cont.getAssets().openFd("sfx.mp3");
+    bgm.setDataSource(music.getFileDescriptor());  
+    bgm.prepare();  
+    initSounds(cont);
+  }
+  catch(IOException e)
+  {
+    println("File did not load");
+  }
+  bgm.start();
+
   //int b, i, j;
   //color c;
-  
   //noCursor();
   fingerOffset = 0;
   cArray = new int[6][6];
@@ -101,6 +123,7 @@ void mousePressed() {
     if(mouseX>130 && mouseX<205 && mouseY>375 && mouseY<450 && tutLevel == 1) {gameState = 0;}
     fingerPress = 30;
     //blip.play();
+    playSound(cont, 2);
     //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(tutLevel == 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
       color f;  //color c, f;   
@@ -145,6 +168,7 @@ void mousePressed() {
   }
   if (gameState == 1) {
     //blip.play();
+    playSound(cont, 2);
     fingerPress = 30;
     if (dist(mouseX,mouseY,53,395) < 40) {
         step += round(hp/2);
@@ -220,7 +244,7 @@ void draw() {
   //highScore = $.jStorage.get("fgHighScore", 0);
     
   textSize(14);
-    
+
   if (gameState == 3) {
       background(225);
       if (tutLevel == 0) {
@@ -442,6 +466,7 @@ void checkEndGame() {
     score += 1;
     cutscene = 300;
     //door.play();
+    playSound(cont, 1);
     sShake[0] = 0;
     sShake[1] = 0;
     sShake[2] = 0;
@@ -672,5 +697,29 @@ class Pcle {
     vy -= 0.1;
     x += vx;
     y += vy;
+  }
+}
+
+void initSounds(Context cont)
+{
+  soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
+  soundPoolMap = new HashMap(2);
+  soundPoolMap.put(s1, soundPool.load(sound1, 1));
+  soundPoolMap.put(s2, soundPool.load(sound2, 2));
+}
+
+void playSound(Context cont, int soundID)
+{
+  if(soundPool == null || soundPoolMap == null)
+    initSounds(cont);
+  soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
+}
+
+public void onDestroy()
+{
+  super.onDestroy();
+  if(bgm != null)
+  {
+    bgm.release();
   }
 }
