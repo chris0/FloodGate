@@ -1,7 +1,7 @@
-import ddf.minim.*;
+//import ddf.minim.*;
 
-Minim minim;
-AudioPlayer bgm, blip, door;
+//Minim minim;
+//AudioPlayer bgm, blip, door;
 int hp;              // a variable to keep track of currency
 int fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
@@ -40,16 +40,16 @@ Number.prototype.between = function (min, max) {
 
 void setup() {
   size(340, 420);
-  minim = new Minim(this);
-  bgm = minim.loadFile("DarkMystery.mp3");
-  blip = minim.loadFile("sfx.mp3");
-  door = minim.loadFile("door.mp3");
-  bgm.play();
+  //minim = new Minim(this);
+  //bgm = minim.loadFile("DarkMystery.mp3");
+  //blip = minim.loadFile("sfx.mp3");
+  //door = minim.loadFile("door.mp3");
+  //bgm.play();
     
   //int b, i, j;
   //color c;
   
-  noCursor();
+  //noCursor();
   fingerOffset = 0;
   cArray = new int[6][6];
   sArray = new boolean[6][6];
@@ -100,7 +100,7 @@ void mousePressed() {
     //if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
     if(mouseX>130 && mouseX<205 && mouseY>375 && mouseY<450 && tutLevel == 1) {gameState = 0;}
     fingerPress = 30;
-    blip.play();
+    //blip.play();
     //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(tutLevel == 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
       color f;  //color c, f;   
@@ -144,7 +144,7 @@ void mousePressed() {
     }
   }
   if (gameState == 1) {
-    blip.play();
+    //blip.play();
     fingerPress = 30;
     if (dist(mouseX,mouseY,53,395) < 40) {
         step += round(hp/2);
@@ -441,7 +441,7 @@ void checkEndGame() {
     lastColor = cArray[0][0];
     score += 1;
     cutscene = 300;
-    door.play();
+    //door.play();
     sShake[0] = 0;
     sShake[1] = 0;
     sShake[2] = 0;
@@ -652,7 +652,8 @@ class Pcle {
   float a;
   float fa;
  
-  void Pcle(float ox, float oy, float or, float og, float ob, float oa, float os) {
+  Pcle(float ox, float oy, float or, float og, float ob, float oa, float os) 
+  {
     x = ox;
     y = oy;
     r = or;
