@@ -13,9 +13,12 @@ Context cont;
 AssetFileDescriptor music, sound1, sound2;
 
 String musicPath;
-int s1, s2;
+int w, h;            // width and height of window
+int ow, oh;          // original height and width for scaling
+float rw, rh;          // width scaling coefficient, height scaling coefficient
+int s1, s2;          // a variable to hold index of sound in soundPool
 int hp;              // a variable to keep track of currency
-int fingerPress;     // a variable to keep track of pressing animation
+float fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
 int cutscene;        // a variable to keep track of cutscene animations
 color lastColor;     // color to display on cutscene
@@ -43,15 +46,16 @@ boolean[][] sArray;  // 2D array of true/false switches
                      // true/false stands for on/off
 color lastC2;
 
-// Checks whether a number is between a range to simplify code
-/*
-Number.prototype.between = function (min, max) {
-    return this > min && this < max;
-;} 
-*/
+public void settings()
+{
+  size(displayWidth, int(1.24*displayWidth), P2D);
+  w=displayWidth; h=int(1.24*displayWidth);
+  ow=340; oh=420;    // original width, height: 340x420
+  rw=w/ow; rh=h/oh;  // ratio original/screen width, height
+}
 
 void setup() {
-  size(340, 420);
+
   act = this.getActivity();
   cont = act.getApplicationContext();
   try {
@@ -81,7 +85,7 @@ void setup() {
 void mousePressed() {
   if (gameState == 0 || gameState == 2) {
     //if (mouseX.between(130,205) && mouseY.between(185,215)){
-    if(mouseX>130 && mouseX<205 && mouseY>185 && mouseY<215) {
+    if(mouseX>rw*130 && mouseX<rw*205 && mouseY>rh*185 && mouseY<rh*215) {
       switchMode();
       for(int i = 0; i < cArray.length; i++) {
         for(int j = 0; j < cArray[i].length; j++) {
@@ -98,7 +102,7 @@ void mousePressed() {
     }
     
     //if (mouseX.between(130,205) && mouseY.between(255,285)){
-    if(mouseX>130 && mouseX<205 && mouseY>255 && mouseY<285) {
+    if(mouseX>rw*130 && mouseX<rw*205 && mouseY>rh*255 && mouseY<rh*285) {
       C1 = color(255);
       C2 = color(204);
       C3 = color(153);
@@ -120,12 +124,12 @@ void mousePressed() {
   }
   if (gameState == 3) {
     //if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
-    if(mouseX>130 && mouseX<205 && mouseY>375 && mouseY<450 && tutLevel == 1) {gameState = 0;}
+    if(mouseX>rw*130 && mouseX<rw*205 && mouseY>rh*375 && mouseY<rh*450 && tutLevel == 1) {gameState = 0;}
     fingerPress = 30;
     //blip.play();
     playSound(cont, 2);
     //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
-    if(tutLevel == 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
+    if(tutLevel == 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
       color f;  //color c, f;   
         
       f = get(mouseX, mouseY);
@@ -169,13 +173,13 @@ void mousePressed() {
   if (gameState == 1) {
     //blip.play();
     playSound(cont, 2);
-    fingerPress = 30;
-    if (dist(mouseX,mouseY,53,395) < 40) {
+    fingerPress = rw*30;
+    if (dist(mouseX,mouseY,rw*53,rh*395) < rw*40) {
         step += round(hp/2);
         hp = 0;
     }
     //if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
-    if(cutscene >= 0 && mouseX>95 && mouseX<245 && mouseY>95 && mouseY<245) {
+    if(cutscene >= 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
       color f; //color c, f;   
         
       f = get(mouseX, mouseY);
@@ -243,33 +247,33 @@ boolean checkNeighbor(int xpos, int ypos) {
 void draw() {
   //highScore = $.jStorage.get("fgHighScore", 0);
     
-  textSize(14);
+  textSize(int(rh*14));
 
   if (gameState == 3) {
       background(225);
       if (tutLevel == 0) {
         fill(30);
-        textSize(35);
-        text("Floodgate Dungeon",15,30);
-        textSize(20);
-        text("How To Play",115,60);
-        textSize(15);
-        text("Click on a block.",115,270);
-        text("The top-left block with change into that color.",20,300);
-        text("All blocks connected to the top-left block will",20,315);
-        text("also change to that color.",85,330);
-        text("Turn all blocks to the same color to proceed.",20,345);
+        textSize(int(rh*35));
+        text("Floodgate Dungeon",rw*15,rh*30);
+        textSize(int(rh*20));
+        text("How To Play",rw*115,rh*60);
+        textSize(int(rh*15));
+        text("Click on a block.",rw*115,rh*270);
+        text("The top-left block with change into that color.",rw*20,rh*300);
+        text("All blocks connected to the top-left block will",rw*20,rh*315);
+        text("also change to that color.",rw*85,rh*330);
+        text("Turn all blocks to the same color to proceed.",rw*20,rh*345);
         strokeWeight(1);
         fill(0);
         stroke(0);
-        rect(90,90,160,160);
+        rect(rw*90,rh*90,rw*160,rh*160);
         for(int i = 0; i < cArray.length; i++) {
           for(int j = 0; j < cArray[i].length; j++) {
             int n = cArray[i][j];
             // color c = colors[n];
             stroke(n);
             fill(n);
-            rect(i*25+95, j*25+95, 25, 25);
+            rect(rw*(i*25+95), rh*(j*25+95), rw*25, rh*25);
           }
         }
         int helpAllCheck = 0;
@@ -287,60 +291,60 @@ void draw() {
       
       if (tutLevel == 1) {
         fill(30);
-        textSize(35);
-        text("Floodgate Dungeon",15,30);
-        textSize(20);
-        text("How To Play",115,60);
-        textSize(15);
-        text("Not bad!",145,85);
-        text("Note that most doors have limited steps.",30,100);
-        text("Red doors has seconds before it explodes.",20,115);
-        text("Notice a device on your left hand.",55,160);
-        text("When you have excess steps it is turned",30,175);
-        text("into H4POINTS. H4POINTS can be used to",20,190);
-        text("add steps or time to unlock the door.",40,205);
-        text("press the circular button to use it.",50,220);
-        text("Yellow doors give x2 H4POINTS!",50,235);
+        textSize(int(rh*35));
+        text("Floodgate Dungeon",rw*15,rh*30);
+        textSize(int(rh*20));
+        text("How To Play",rw*115,rh*60);
+        textSize(int(rh*15));
+        text("Not bad!",rw*145,rh*85);
+        text("Note that most doors have limited steps.",rw*30,rh*100);
+        text("Red doors has seconds before it explodes.",rw*20,rh*115);
+        text("Notice a device on your left hand.",rw*55,rh*160);
+        text("When you have excess steps it is turned",rw*30,rh*175);
+        text("into H4POINTS. H4POINTS can be used to",rw*20,rh*190);
+        text("add steps or time to unlock the door.",rw*40,rh*205);
+        text("press the circular button to use it.",rw*50,rh*220);
+        text("Yellow doors give x2 H4POINTS!",rw*50,rh*235);
         fill(225);
-        translate(80,430 + fingerOffset);
+        translate(rw*80,rh*(430 + fingerOffset));
         strokeWeight(30);
         stroke(150);
-        line(-100,-140,0,-150);
-        line(0,-95,30,-100);
+        line(-rw*100,-rh*140,0,-rh*150);
+        line(rw*0,-rh*95,rw*30,-rh*100);
         stroke(0);
         strokeWeight(5);
         rotate(10/57.3);
-        rect(0,0,-100,-130);
+        rect(0,0,-rw*100,-rh*130);
         stroke(30);
         fill(30);
         strokeWeight(1);
         beginShape();
-          vertex(150,0);
-          vertex(170,-20);
-          vertex(170,-20);
-          vertex(150,0);
+          vertex(rw*150,0);
+          vertex(rw*170,-rh*20);
+          vertex(rw*170,-rh*20);
+          vertex(rw*150,0);
         endShape();
-        textSize(14);
-        text("H4CK 0.95.1", -90,-110); 
-        textSize(13);
-        text(hp + " H4P01NTS", -90,-70); 
+        textSize(int(rh*14));
+        text("H4CK 0.95.1", -rw*90,-rh*110); 
+        textSize(int(rh*13));
+        text(hp + " H4P01NTS", -rw*90,-rh*70); 
         fill(225);
-        ellipse(-50,-25,40,40);
-        textSize(13);
+        ellipse(-rw*50,-rh*25,rw*40,rh*40);
+        textSize(int(rh*13));
         fill(30);
-        text("+ " + round(hp/2), -60,-22); 
+        text("+ " + round(hp/2), -rw*60,-rh*22); 
         rotate(-10/57.3);
         strokeWeight(30);
         stroke(150);
-        line(30,-100,30,-100);
-        line(30,-70,15,-60);
-        translate(-80,-430 - fingerOffset);
+        line(rw*30,-rh*100,rw*30,-rh*100);
+        line(rw*30,-rh*70,rw*15,-rh*60);
+        translate(-rw*80,-rh*430 - fingerOffset);
         strokeWeight(1);
         fill(30);
-        textSize(30);
-        text("Done",132,400);
+        textSize(int(rh*30));
+        text("Done",rw*132,rh*400);
         fill(0,0);
-        rect(130,375,75,30);
+        rect(rw*130,rh*375,rw*75,rh*30);
       }
       finger();
   }
@@ -348,29 +352,29 @@ void draw() {
   if (gameState == 0 || gameState == 2) {
     background(225);
     fill(30);
-    textSize(30);
-    text("Start",135,210);
-    text("Help",136,280);
-    textSize(35);
-    text("Floodgate Dungeon",15,150);
+    textSize(int(rh*30));
+    text("Start",rw*135,rh*210);
+    text("Help",rw*136,rh*280);
+    textSize(int(rh*35));
+    text("Floodgate Dungeon",rw*15,rh*150);
     strokeWeight(1);
     fill(0,0);
-    rect(130,185,75,30);
-    rect(130,255,75,30);
+    rect(rw*130,rh*185,rw*75,rh*30);
+    rect(rw*130,rh*255,rw*75,rh*30);
     fill(30);
-    textSize(20);
-    text("High score: " + highScore,110,390);
+    textSize(int(rh*20));
+    text("High score: " + highScore,rw*110,rh*390);
     finger();
   }
   
   if (gameState == 2) {
     fill(30);
-    textSize(20);
-    text("Score: " + score,140,370);
+    textSize(int(rh*20));
+    text("Score: " + score,rw*140,rh*370);
   }
     
   if (gameState == 1) {
-    textSize(14);
+    textSize(int(rh*14));
     background(C2);
     if (cutscene > 0) {
       cutsceneAnim();
@@ -384,58 +388,58 @@ void draw() {
       }
       if (fingerOffset > 0) {fingerOffset -= (500/60);}
       if (fingerOffset < 0) {fingerOffset = 0;}
-      rect(90,90,160,160);
-      rect(165,0,10,400);
-      rect(0,395,340,10);
-      rect(100,60,140,30);  
+      rect(rw*90,rh*90,rw*160,rh*160);
+      rect(rw*165,0,rw*10,rh*400);
+      rect(0,rh*395,rw*340,rh*10);
+      rect(rw*100,rh*60,rw*140,rh*30);  
       fill(C1);
-      rect(105,65,130,20);  
+      rect(rw*105,rh*65,rw*130,rh*20);  
       fill(30);
-      text(round(step),165,82);
+      text(round(step),rw*165,rh*82);
       for(int i = 0; i < cArray.length; i++) {
         for(int j = 0; j < cArray[i].length; j++) {
           int n = cArray[i][j];
           //color c = colors[n];
           stroke(n);
           fill(n);
-          rect(i*25+95, j*25+95, 25, 25);
+          rect(i*rw*25+rw*95, j*rh*25+rh*95, rw*25, rh*25);
         }
       }
     }
     fill(225);
-    translate(80,430 + fingerOffset);
+    translate(rw*80,rh*(430 + fingerOffset));
     strokeWeight(30);
     stroke(150);
-    line(-100,-140,0,-150);
-    line(0,-95,30,-100);
+    line(-rw*100,-rh*140,0,-rh*150);
+    line(0,-rh*95,rw*30,-rh*100);
     stroke(0);
     strokeWeight(5);
     rotate(10/57.3);
-    rect(0,0,-100,-130);
+    rect(0,0,-rw*100,-rh*130);
     stroke(30);
     fill(30);
     strokeWeight(1);
     beginShape();
-      vertex(150,0);
-      vertex(170,-20);
-      vertex(170,-20);
-      vertex(150,0);
+      vertex(rw*150,0);
+      vertex(rw*170,-rh*20);
+      vertex(rw*170,-rh*20);
+      vertex(rw*150,0);
     endShape();
-    textSize(14);
-    text("H4CK 0.95.1", -90,-110); 
-    textSize(13);
-    text(hp + " H4P01NTS", -90,-70); 
+    textSize(int(rh*14));
+    text("H4CK 0.95.1", -rw*90,-rh*110); 
+    textSize(int(rh*13));
+    text(hp + " H4P01NTS", -rw*90,-rh*70); 
     fill(225);
-    ellipse(-50,-25,40,40);
-    textSize(13);
+    ellipse(-rw*50,-rh*25,rw*40,rh*40);
+    textSize(int(rh*13));
     fill(30);
-    text("+ " + round(hp/2), -60,-22); 
+    text("+ " + round(hp/2), -rw*60,-rh*22); 
     rotate(-10/57.3);
     strokeWeight(30);
     stroke(150);
-    line(30,-100,30,-100);
-    line(30,-70,15,-60);
-    translate(-80,-430 - fingerOffset);
+    line(rw*30,-rh*100,rw*30,-rh*100);
+    line(rw*30,-rh*70,rw*15,-rh*60);
+    translate(-rw*80,-rh*(430 - fingerOffset));
     strokeWeight(1);
     finger();
     checkEndGame();
@@ -445,7 +449,6 @@ void draw() {
       p.update();
       if (p.fa < 0) {pcles.remove(i);}
     }
-
     //text(mouseX + "," + mouseY,mouseX,mouseY);
   }
   
@@ -465,8 +468,7 @@ void checkEndGame() {
     lastColor = cArray[0][0];
     score += 1;
     cutscene = 300;
-    //door.play();
-    playSound(cont, 1);
+    playSound(cont, 1);  // door sound
     sShake[0] = 0;
     sShake[1] = 0;
     sShake[2] = 0;
@@ -529,25 +531,25 @@ void finger() {
   if (fingerPress > 0) {fingerPress -= 1;}
   if (fingerPress < 0) {fingerPress = 0;}
   noFill();
-  ellipse(mouseX, mouseY, 4, 4);
+  ellipse(mouseX, mouseY, rw*4, rw*4);
   fill(150);
   stroke(150);
-  ellipse(mouseX+30 - (fingerPress - fingerOffset),mouseY+30 - (fingerPress - fingerOffset),30,30);
-  ellipse(mouseX+92- (fingerPress - fingerOffset),mouseY+95- (fingerPress - fingerOffset),30,30);
-  ellipse(mouseX+112- (fingerPress - fingerOffset),mouseY+86- (fingerPress - fingerOffset),30,30);
-  ellipse(mouseX+132- (fingerPress - fingerOffset),mouseY+85- (fingerPress - fingerOffset),30,30);
-  translate(mouseX+39- (fingerPress - fingerOffset),mouseY+79- (fingerPress - fingerOffset));
+  ellipse(mouseX+rw*30-(fingerPress - fingerOffset),mouseY+rh*30-(fingerPress - fingerOffset),rw*30,rh*30);
+  ellipse(mouseX+rw*92-(fingerPress - fingerOffset),mouseY+rh*95-(fingerPress - fingerOffset),rw*30,rh*30);
+  ellipse(mouseX+rw*112-(fingerPress - fingerOffset),mouseY+rh*86-(fingerPress - fingerOffset),rw*30,rh*30);
+  ellipse(mouseX+rw*132-(fingerPress - fingerOffset),mouseY+rh*85-(fingerPress - fingerOffset),rw*30,rh*30);
+  translate(mouseX+rw*39-(fingerPress - fingerOffset),mouseY+rh*79-(fingerPress - fingerOffset));
   rotate(1.1);
-  rect(-50,-30,100,30);
-  rect(49,0,550,-100);
+  rect(-w*50/ow,-h*30/oh,w*100/ow,h*30/oh);
+  rect(w*49/ow,0,w*550/ow,-h*100/oh);
   fill(0);
   stroke(0);
-  rect(49,5,100,-110);
+  rect(w*49/ow,h*5/oh,w*100/ow,-h*110/oh);
   fill(150);
   stroke(150);
   // rect(49,0,50,-100);
   rotate(-1.1);
-  translate(0 - (mouseX+57- (fingerPress - fingerOffset)),0 - (mouseY+79- (fingerPress - fingerOffset)));
+  translate(0 - (mouseX+w*57/ow- (fingerPress - fingerOffset)),0 - (mouseY+h*79/oh - (fingerPress - fingerOffset)));
 }
 
 void cutsceneAnim() {
@@ -558,47 +560,47 @@ void cutsceneAnim() {
     fingerOffset += 5;
     
     beginShape();
-      vertex(0,380);
-      vertex(130,200);
-      vertex(210,200);
-      vertex(340,380);
-      vertex(0,380);
+      vertex(0,rh*380);
+      vertex(rw*130,rh*200);
+      vertex(rw*210,rh*200);
+      vertex(rw*340,rh*380);
+      vertex(0,rh*380);
     endShape();
     
     beginShape();
       vertex(0,0);
-      vertex(130,100);
-      vertex(210,100);
-      vertex(340,0);
+      vertex(rw*130,rh*100);
+      vertex(rw*210,rh*100);
+      vertex(rw*340,0);
       vertex(0,0);
     endShape();
     
-    line(130,200,130,100);
-    line(210,200,210,100);
-    line(170,200,170,100);
+    line(rw*130,rh*200,rw*130,rh*100);
+    line(rw*210,rh*200,rw*210,rh*100);
+    line(rw*170,rh*200,rw*170,rh*100);
      
     fill(lastC2);
     stroke(lastC2);
-    rect(0,381,340,100);
+    rect(0,rh*381,rw*340,rh*100);
     stroke(30);
       
     fill(lastC2);
-    rect(0,0 - (300 - cutscene)*4,340,400);
+    rect(0,rh*(0 - (300 - cutscene)*4),rw*340,rh*400);
     fill(30);
-    rect(90,90 - (300 - cutscene)*4,160,160);
-    rect(0,395 - (300 - cutscene)*4,340,10);
+    rect(rw*90,rh*(90 - (300 - cutscene)*4),rw*160,rh*160);
+    rect(0,rh*(395 - (300 - cutscene)*4),rw*340,rh*10);
     fill(lastColor);
-    rect(95,95 - (300 - cutscene)*4,150,150);
+    rect(rw*95,rh*(95 - (300 - cutscene)*4),rw*150,rh*150);
     
     strokeWeight(15);
     stroke(0);
-    line(138,179 - (300 - cutscene)*4,170,200 - (300 - cutscene)*4);
-    line(170,200 - (300 - cutscene)*4,200,135 - (300 - cutscene)*4);
+    line(rw*138,rh*(179 - (300 - cutscene)*4),rw*170,rh*(200 - (300 - cutscene)*4));
+    line(rw*170,rh*(200 - (300 - cutscene)*4),rw*200,rh*(135 - (300 - cutscene)*4));
     
     strokeWeight(13);
     stroke(255);
-    line(138,179 - (300 - cutscene)*4,170,200 - (300 - cutscene)*4);
-    line(170,200 - (300 - cutscene)*4,200,135 - (300 - cutscene)*4);
+    line(rw*138,rh*(179 - (300 - cutscene)*4),rw*170,rh*(200 - (300 - cutscene)*4));
+    line(rw*170,rh*(200 - (300 - cutscene)*4),rw*200,rh*(135 - (300 - cutscene)*4));
   }
   
   if (cutscene <= 200) {
@@ -618,40 +620,40 @@ void cutsceneAnim() {
     strokeWeight(10 - 9*(cutscene/200));
     
     beginShape();
-      vertex(0 - (200 - cutscene) + sShake[1],380 + (200 - cutscene) + sShake[3]);
-      vertex(130 - (200 - cutscene) + sShake[1],200 + (200 - cutscene) + sShake[3]);
-      vertex(210 + (200 - cutscene) + sShake[1],200 + (200 - cutscene) + sShake[3]);
-      vertex(340 + (200 - cutscene) + sShake[1],380 + (200 - cutscene) + sShake[3]);
-      vertex(0 - (200 - cutscene) + sShake[1],380 + (200 - cutscene) + sShake[3]);
+      vertex(rw*(0 - (200 - cutscene) + sShake[1]),rh*(380 + (200 - cutscene) + sShake[3]));
+      vertex(rw*(130 - (200 - cutscene) + sShake[1]),rh*(200 + (200 - cutscene) + sShake[3]));
+      vertex(rw*(210 + (200 - cutscene) + sShake[1]),rh*(200 + (200 - cutscene) + sShake[3]));
+      vertex(rw*(340 + (200 - cutscene) + sShake[1]),rh*(380 + (200 - cutscene) + sShake[3]));
+      vertex(rw*(0 - (200 - cutscene) + sShake[1]),rh*(380 + (200 - cutscene) + sShake[3]));
     endShape();
     
     beginShape();
-      vertex(0 - (200 - cutscene) + sShake[1],0 - (200 - cutscene) + sShake[3]);
-      vertex(130 - (200 - cutscene) + sShake[1],100 - (200 - cutscene) + sShake[3]);
-      vertex(210 + (200 - cutscene) + sShake[1],100 - (200 - cutscene) + sShake[3]);
-      vertex(340 + (200 - cutscene) + sShake[1],0 - (200 - cutscene) + sShake[3]);
-      vertex(0 - (200 - cutscene) + sShake[1],0 - (200 - cutscene) + sShake[3]);
+      vertex(rw*(0 - (200 - cutscene) + sShake[1]),rh*(0 - (200 - cutscene) + sShake[3]));
+      vertex(rw*(130 - (200 - cutscene) + sShake[1]),rh*(100 - (200 - cutscene) + sShake[3]));
+      vertex(rw*(210 + (200 - cutscene) + sShake[1]),rh*(100 - (200 - cutscene) + sShake[3]));
+      vertex(rw*(340 + (200 - cutscene) + sShake[1]),rh*(0 - (200 - cutscene) + sShake[3]));
+      vertex(rw*(0 - (200 - cutscene) + sShake[1]),rh*(0 - (200 - cutscene) + sShake[3]));
     endShape();
     
     fill(lastC2);
     stroke(lastC2);
-    rect(0,381 + (200 - cutscene) + sShake[3],340,100);
+    rect(0,rh*(381 + (200 - cutscene) + sShake[3]),rw*340,rh*100);
     stroke(30);  
       
-    line(130 - (200 - cutscene) + sShake[1],200 + (200 - cutscene) + sShake[3],130 - (200 - cutscene) + sShake[1],100 - (200 - cutscene) + sShake[3]);
-    line(210 + (200 - cutscene) + sShake[1],200 + (200 - cutscene) + sShake[3],210 + (200 - cutscene) + sShake[1],100 - (200 - cutscene) + sShake[3]);
-    line(170 + sShake[1],200 + (200 - cutscene) + sShake[3],170 + sShake[1],100 - (200 - cutscene) + sShake[3]);
+    line(rw*(130 - (200 - cutscene) + sShake[1]),rh*(200 + (200 - cutscene) + sShake[3]),rw*(130 - (200 - cutscene) + sShake[1]),rh*(100 - (200 - cutscene) + sShake[3]));
+    line(rw*(210 + (200 - cutscene) + sShake[1]),rh*(200 + (200 - cutscene) + sShake[3]),rw*(210 + (200 - cutscene) + sShake[1]),rh*(100 - (200 - cutscene) + sShake[3]));
+    line(rw*(170 + sShake[1]),rh*(200 + (200 - cutscene) + sShake[3]),rw*(170 + sShake[1]),rh*(100 - (200 - cutscene) + sShake[3]));
     
     strokeWeight(1);
     fill(30);
-    rect(90 + 80*(cutscene/200) + sShake[1],90 + 80*(cutscene/200) + sShake[3],160 - 160*(cutscene/200),160 - 160*(cutscene/200));
-    rect(100 + 70*(cutscene/200) + sShake[1],60 + 110*(cutscene/200) + sShake[3],140 - 140*(cutscene/200),30 - 30*(cutscene/200));  
+    rect(rw*(90 + 80*(cutscene/200) + sShake[1]),rh*(90 + 80*(cutscene/200) + sShake[3]),rw*(160 - 160*(cutscene/200)),rh*(160 - 160*(cutscene/200)));
+    rect(rw*(100 + 70*(cutscene/200) + sShake[1]),rh*(60 + 110*(cutscene/200) + sShake[3]),rw*(140 - 140*(cutscene/200)),rh*(30 - 30*(cutscene/200)));  
     fill(C1);
-    rect(105 + 65*(cutscene/200) + sShake[1],65 + 105*(cutscene/200) + sShake[3],130 - 130*(cutscene/200),20 - 20*(cutscene/200));
-    textSize(14 - 13*(cutscene/200));
+    rect(rw*(105 + 65*(cutscene/200) + sShake[1]),rh*(65 + 105*(cutscene/200) + sShake[3]),rw*(130 - 130*rw*(cutscene/200)),rh*(20 - 20*(cutscene/200)));
+    textSize(int(rh*(14 - 13*(cutscene/200))));
     fill(30);
-    text(round(step),165 + 5*(cutscene/200) + sShake[1],82 + 88*(cutscene/200) + sShake[3]);
-    textSize(14);
+    text(round(step),rw*(165 + 5*(cutscene/200) + sShake[1]),rh*(82 + 88*(cutscene/200) + sShake[3]));
+    textSize(int(rh*14));
     
     for(int i = 0; i < cArray.length; i++) {
       for(int j = 0; j < cArray[i].length; j++) {
@@ -659,7 +661,7 @@ void cutsceneAnim() {
         //float c = colors[n];
         stroke(n);
         fill(n);
-        rect(i*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[1], j*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[3], 25 - 25*(cutscene/200), 25 - 25*(cutscene/200));
+        rect(rw*(i*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[1]), rh*(j*(25 - 25*(cutscene/200))+(95 + 75*(cutscene/200)) + sShake[3]), rw*(25 - 25*(cutscene/200)), rh*(25 - 25*(cutscene/200)));
       }
     }
   }
@@ -689,12 +691,12 @@ class Pcle {
   }
   
   void update() {
-    fa = a*((x - 250)/170);
+    fa = a*((x - rw*250)/170);
     stroke(r,g,b,fa/2);
     fill(r,g,b,fa);
-    rect(x - s/2,y - s/2,s,s);
-    vx += random(-1,1);
-    vy -= 0.1;
+    rect(rw*(x - s/2),rh*(y - s/2),rw*s,rh*s);
+    vx += rw*random(-1,1);
+    vy -= rh*0.1;
     x += vx;
     y += vy;
   }
@@ -713,6 +715,11 @@ void playSound(Context cont, int soundID)
   if(soundPool == null || soundPoolMap == null)
     initSounds(cont);
   soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
+}
+
+boolean between(float pos, float min, float max)
+{
+  return pos>min && pos<max;
 }
 
 public void onDestroy()
