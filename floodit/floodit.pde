@@ -7,7 +7,7 @@ import android.media.AudioManager;
 
 MediaPlayer bgm;
 SoundPool soundPool;
-HashMap soundPoolMap;
+HashMap<Object, Object> soundPoolMap;
 Activity act;
 Context cont;
 AssetFileDescriptor music, sound1, sound2;
@@ -26,6 +26,7 @@ int[] sShake;        // screenshake on cutscene. [0] determines X direction, [1]
 int gameState;       // a variable to keep track of states. 0 = initial main menu, 1 = game, 2 = main menu
 int highScore;       // we obtain this from a stored value with jStorage
 int score;
+float substep;
 int step;
 int doorMode;
 int tutLevel;
@@ -50,6 +51,7 @@ public void settings()
 {
   size(displayWidth, int(1.24*displayWidth), P2D);
   w=displayWidth; h=int(1.24*displayWidth);
+  orientation(PORTRAIT);
   ow=340; oh=420;    // original width, height: 340x420
   rw=w/ow; rh=h/oh;  // ratio original/screen width, height
 }
@@ -384,7 +386,8 @@ void draw() {
       strokeWeight(1);
       fill(30);
       if (doorMode == 2) {
-        step -= 1/60;
+        substep -= 1/frameRate;
+        step = ceil(substep);
       }
       if (fingerOffset > 0) {fingerOffset -= (500/60);}
       if (fingerOffset < 0) {fingerOffset = 0;}
@@ -516,7 +519,8 @@ void switchMode() {
     break;
   
   case 2:
-    step = round(random(10,15));
+    substep = round(random(10,15));
+    step = ceil(substep);
     C1 = color(255,0,0);
     C2 = color(204,0,0);
     C3 = color(153,0,0);
@@ -705,7 +709,7 @@ class Pcle {
 void initSounds(Context cont)
 {
   soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
-  soundPoolMap = new HashMap(2);
+  soundPoolMap = new HashMap<Object, Object>(2);
   soundPoolMap.put(s1, soundPool.load(sound1, 1));
   soundPoolMap.put(s2, soundPool.load(sound2, 2));
 }
