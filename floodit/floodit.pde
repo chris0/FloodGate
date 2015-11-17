@@ -11,6 +11,7 @@ HashMap<Object, Object> soundPoolMap;
 Activity act;
 Context cont;
 AssetFileDescriptor music, sound1, sound2;
+PFont font;
 
 String musicPath;
 int w, h;            // width and height of window
@@ -73,6 +74,7 @@ void setup() {
   {
     println("File did not load");
   }
+  bgm.setLooping(true);
   bgm.start();
 
   //int b, i, j;
@@ -82,6 +84,9 @@ void setup() {
   cArray = new int[6][6];
   sArray = new boolean[6][6];
   sShake = new int[4];
+  
+  font = createFont("Play-Regular.ttf", 32);
+  textFont(font);
 }  
 
 void mousePressed() {
@@ -128,12 +133,11 @@ void mousePressed() {
     //if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
     if(mouseX>rw*130 && mouseX<rw*205 && mouseY>rh*375 && mouseY<rh*450 && tutLevel == 1) {gameState = 0;}
     fingerPress = 30;
-    //blip.play();
     playSound(cont, 2);
     //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(tutLevel == 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
       color f;  //color c, f;   
-        
+      playSound(cont, 2);
       f = get(mouseX, mouseY);
         
       int xpos = 0;
@@ -173,8 +177,6 @@ void mousePressed() {
     }
   }
   if (gameState == 1) {
-    //blip.play();
-    playSound(cont, 2);
     fingerPress = rw*30;
     if (dist(mouseX,mouseY,rw*53,rh*395) < rw*40) {
         step += round(hp/2);
@@ -183,7 +185,7 @@ void mousePressed() {
     //if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(cutscene >= 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
       color f; //color c, f;   
-        
+      playSound(cont, 2);
       f = get(mouseX, mouseY);
       
       if ((doorMode == 0 || doorMode == 1) && f != cArray[0][0]) {step -= 1;}
@@ -336,7 +338,7 @@ void draw() {
         fill(30);
         text("+ " + round(hp/2), -rw*60,-rh*22); 
         rotate(-10/57.3);
-        strokeWeight(30);
+        strokeWeight(rw*30);
         stroke(150);
         line(rw*30,-rh*100,rw*30,-rh*100);
         line(rw*30,-rh*70,rw*15,-rh*60);
@@ -348,7 +350,7 @@ void draw() {
         fill(0,0);
         rect(rw*130,rh*375,rw*75,rh*30);
       }
-      finger();
+      //finger();
   }
 
   if (gameState == 0 || gameState == 2) {
@@ -387,7 +389,7 @@ void draw() {
       fill(30);
       if (doorMode == 2) {
         substep -= 1/frameRate;
-        step = ceil(substep);
+        step = floor(substep);
       }
       if (fingerOffset > 0) {fingerOffset -= (500/60);}
       if (fingerOffset < 0) {fingerOffset = 0;}
@@ -444,7 +446,7 @@ void draw() {
     line(rw*30,-rh*70,rw*15,-rh*60);
     translate(-rw*80,-rh*(430 - fingerOffset));
     strokeWeight(1);
-    finger();
+    //finger();
     checkEndGame();
 
     for (int i=pcles.size()-1; i>=0; i--) {
@@ -520,7 +522,7 @@ void switchMode() {
   
   case 2:
     substep = round(random(10,15));
-    step = ceil(substep);
+    step = floor(substep);
     C1 = color(255,0,0);
     C2 = color(204,0,0);
     C3 = color(153,0,0);
