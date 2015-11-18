@@ -21,7 +21,7 @@ int s1, s2;          // a variable to hold index of sound in soundPool
 int hp;              // a variable to keep track of currency
 float fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
-int cutscene;        // a variable to keep track of cutscene animations
+float cutscene;        // a variable to keep track of cutscene animations
 color lastColor;     // color to display on cutscene
 int[] sShake;        // screenshake on cutscene. [0] determines X direction, [1] determines X movement, [2] determines Y direction, [3] determines Y movement
 int gameState;       // a variable to keep track of states. 0 = initial main menu, 1 = game, 2 = main menu
@@ -546,16 +546,16 @@ void finger() {
   ellipse(mouseX+rw*132-(fingerPress - fingerOffset),mouseY+rh*85-(fingerPress - fingerOffset),rw*30,rh*30);
   translate(mouseX+rw*39-(fingerPress - fingerOffset),mouseY+rh*79-(fingerPress - fingerOffset));
   rotate(1.1);
-  rect(-w*50/ow,-h*30/oh,w*100/ow,h*30/oh);
-  rect(w*49/ow,0,w*550/ow,-h*100/oh);
+  rect(-rw*50,-rh*30,rw*100,rh*30);
+  rect(rw*49,0,rw*550,-rh*100);
   fill(0);
   stroke(0);
-  rect(w*49/ow,h*5/oh,w*100/ow,-h*110/oh);
+  rect(rw*49,rh*5,rw*100,-rh*110);
   fill(150);
   stroke(150);
   // rect(49,0,50,-100);
   rotate(-1.1);
-  translate(0 - (mouseX+w*57/ow- (fingerPress - fingerOffset)),0 - (mouseY+h*79/oh - (fingerPress - fingerOffset)));
+  translate(0 - (mouseX+rw*57-(fingerPress - fingerOffset)),0 - (mouseY+rh*79 - (fingerPress - fingerOffset)));
 }
 
 void cutsceneAnim() {
@@ -655,7 +655,7 @@ void cutsceneAnim() {
     rect(rw*(90 + 80*(cutscene/200) + sShake[1]),rh*(90 + 80*(cutscene/200) + sShake[3]),rw*(160 - 160*(cutscene/200)),rh*(160 - 160*(cutscene/200)));
     rect(rw*(100 + 70*(cutscene/200) + sShake[1]),rh*(60 + 110*(cutscene/200) + sShake[3]),rw*(140 - 140*(cutscene/200)),rh*(30 - 30*(cutscene/200)));  
     fill(C1);
-    rect(rw*(105 + 65*(cutscene/200) + sShake[1]),rh*(65 + 105*(cutscene/200) + sShake[3]),rw*(130 - 130*rw*(cutscene/200)),rh*(20 - 20*(cutscene/200)));
+    rect(rw*(105 + 65*(cutscene/200) + sShake[1]),rh*(65 + 105*(cutscene/200) + sShake[3]),rw*(130 - 130*(cutscene/200)),rh*(20 - 20*(cutscene/200)));
     textSize(int(rh*(14 - 13*(cutscene/200))));
     fill(30);
     text(round(step),rw*(165 + 5*(cutscene/200) + sShake[1]),rh*(82 + 88*(cutscene/200) + sShake[3]));
