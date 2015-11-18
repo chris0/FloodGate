@@ -13,7 +13,6 @@ Context cont;
 AssetFileDescriptor music, sound1, sound2;
 PFont font;
 
-String musicPath;
 int w, h;            // width and height of window
 int ow, oh;          // original height and width for scaling
 float rw, rh;          // width scaling coefficient, height scaling coefficient
@@ -31,6 +30,7 @@ float substep;
 int step;
 int doorMode;
 int tutLevel;
+int levelsCompleted;
 
 ArrayList<Pcle> pcles =  new ArrayList<Pcle>();
 
@@ -76,7 +76,7 @@ void setup() {
   }
   bgm.setLooping(true);
   bgm.start();
-
+  levelsCompleted = 0;
   //int b, i, j;
   //color c;
   //noCursor();
@@ -179,8 +179,13 @@ void mousePressed() {
   if (gameState == 1) {
     fingerPress = rw*30;
     if (dist(mouseX,mouseY,rw*53,rh*395) < rw*40) {
-        step += round(hp/2);
-        hp = 0;
+      if(doorMode == 2) 
+      {
+        substep += round(hp/2);
+        step = floor(substep);
+      }
+      else { step += round(hp/2); }
+      hp = 0;
     }
     //if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(cutscene >= 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
@@ -368,7 +373,7 @@ void draw() {
     fill(30);
     textSize(int(rh*20));
     text("High score: " + highScore,rw*110,rh*390);
-    finger();
+    //finger();
   }
   
   if (gameState == 2) {
@@ -469,9 +474,10 @@ void checkEndGame() {
     }
   } 
   if (allCheck >= 36) {
-    if (doorMode == 1) {hp += round(step*2);} else {hp += round(step);}
+    if (doorMode == 1 || doorMode == 2) {hp += round(step);} else {hp += round(step/2);}
     lastColor = cArray[0][0];
-    score += 1;
+    score += (1 + hp);
+    levelsCompleted += 1;
     cutscene = 300;
     playSound(cont, 1);  // door sound
     sShake[0] = 0;
@@ -492,6 +498,7 @@ void checkEndGame() {
   if(step <= 0 && allCheck < 36) {
     score += hp;
     hp = 0;
+    levelsCompleted = 0;
     //if (score > highScore) {$.jStorage.set("fgHighScore", score);}
     gameState = 2;
   }
@@ -503,7 +510,8 @@ void switchMode() {
   C6 = color(0);
   switch(doorMode) {
   case 0:
-    step = round(random(14,19));
+    if(levelsCompleted<4) { step = round(random(14-levelsCompleted,19-levelsCompleted)); }
+    else { step = round(random(10, 15)); }
     C1 = color(255);
     C2 = color(204);
     C3 = color(153);
@@ -512,7 +520,8 @@ void switchMode() {
     break;
   
   case 1:
-    step = round(random(16,21));
+    if(levelsCompleted<4) { step = round(random(16-levelsCompleted, 21-levelsCompleted)); }
+    else { step = round(random(12, 16)); }
     C1 = color(255,255,0);
     C2 = color(204,204,0);
     C3 = color(153,153,0);
@@ -521,7 +530,8 @@ void switchMode() {
     break;
   
   case 2:
-    substep = round(random(10,15));
+    if(levelsCompleted<4) { substep = round(random(10-levelsCompleted, 15-levelsCompleted)); }
+    else { substep = round(random(6, 11)); }
     step = floor(substep);
     C1 = color(255,0,0);
     C2 = color(204,0,0);
