@@ -14,7 +14,7 @@ AssetFileDescriptor music, sound1, sound2;
 PFont font;
 
 int w, h;            // width and height of window
-int ow, oh;          // original height and width for scaling
+float ow, oh;          // original height and width for scaling
 float rw, rh;          // width scaling coefficient, height scaling coefficient
 int s1, s2;          // a variable to hold index of sound in soundPool
 int hp;              // a variable to keep track of currency
@@ -22,8 +22,8 @@ float fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
 float cutscene;        // a variable to keep track of cutscene animations
 color lastColor;     // color to display on cutscene
-int[] sShake;        // screenshake on cutscene. [0] determines X direction, [1] determines X movement, [2] determines Y direction, [3] determines Y movement
-int gameState;       // a variable to keep track of states. 0 = initial main menu, 1 = game, 2 = main menu
+float[] sShake;        // screenshake on cutscene. [0] determines X direction, [1] determines X movement, [2] determines Y direction, [3] determines Y movement
+int gameState;       // a variable to keep track of states.
 int highScore;       // we obtain this from a stored value with jStorage
 int score;
 float substep;
@@ -53,7 +53,7 @@ public void settings()
   size(displayWidth, int(1.24*displayWidth), P2D);
   w=displayWidth; h=int(1.24*displayWidth);
   orientation(PORTRAIT);
-  ow=340; oh=420;    // original width, height: 340x420
+  ow=340.0; oh=420.0;    // original width, height: 340x420
   rw=w/ow; rh=h/oh;  // ratio original/screen width, height
 }
 
@@ -83,7 +83,7 @@ void setup() {
   fingerOffset = 0;
   cArray = new int[6][6];
   sArray = new boolean[6][6];
-  sShake = new int[4];
+  sShake = new float[4];
   
   font = createFont("Play-Regular.ttf", 32);
   textFont(font);
@@ -177,7 +177,7 @@ void mousePressed() {
     }
   }
   if (gameState == 1) {
-    fingerPress = rw*30;
+    fingerPress = 30;
     if (dist(mouseX,mouseY,rw*53,rh*395) < rw*40) {
       if(doorMode == 2) 
       {
@@ -570,7 +570,7 @@ void finger() {
 
 void cutsceneAnim() {
   if (cutscene > 200) {
-    strokeWeight(1);
+    strokeWeight(2);
     fill(C2);
     stroke(30);
     fingerOffset += 5;
