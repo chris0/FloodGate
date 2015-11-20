@@ -58,7 +58,7 @@ public void settings()
 }
 
 void setup() {
-
+  frameRate(30);
   act = this.getActivity();
   cont = act.getApplicationContext();
   try {
@@ -84,7 +84,6 @@ void setup() {
   cArray = new int[6][6];
   sArray = new boolean[6][6];
   sShake = new float[4];
-  
   font = createFont("Play-Regular.ttf", 32);
   textFont(font);
 }  
@@ -255,9 +254,8 @@ boolean checkNeighbor(int xpos, int ypos) {
 
 void draw() {
   //highScore = $.jStorage.get("fgHighScore", 0);
-    
-  textSize(int(rh*14));
 
+  textSize(int(rh*14));
   if (gameState == 3) {
       background(225);
       if (tutLevel == 0) {
@@ -387,7 +385,7 @@ void draw() {
     background(C2);
     if (cutscene > 0) {
       cutsceneAnim();
-      cutscene -= 1;
+      cutscene -= 2;
     } else {
       stroke(30);
       strokeWeight(1);
