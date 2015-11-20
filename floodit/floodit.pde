@@ -416,10 +416,9 @@ void draw() {
     }
     fill(225);
     translate(rw*80,rh*(430 + fingerOffset));
-    strokeWeight(30);
+    strokeWeight(rw*30);
     stroke(150);
     line(-rw*100,-rh*140,0,-rh*150);
-    line(0,-rh*95,rw*30,-rh*100);
     stroke(0);
     strokeWeight(5);
     rotate(10/57.3);
@@ -443,8 +442,9 @@ void draw() {
     fill(30);
     text("+ " + round(hp/2), -rw*60,-rh*22); 
     rotate(-10/57.3);
-    strokeWeight(30);
+    strokeWeight(rw*30);
     stroke(150);
+    line(0,-rh*95,rw*30,-rh*100);
     line(rw*30,-rh*100,rw*30,-rh*100);
     line(rw*30,-rh*70,rw*15,-rh*60);
     translate(-rw*80,-rh*(430 - fingerOffset));
