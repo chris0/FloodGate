@@ -12,6 +12,7 @@ Activity act;
 Context cont;
 AssetFileDescriptor music, sound1, sound2;
 PFont font;
+Table csv;
 
 int w, h;            // width and height of window
 float ow, oh;          // original height and width for scaling
@@ -86,6 +87,16 @@ void setup() {
   sShake = new float[4];
   font = createFont("Play-Regular.ttf", 32);
   textFont(font);
+  try {
+    csv = new Table(new File(sketchPath("") + "data.csv"));
+    highScore = csv.getInt(0,0);
+  }
+  catch (Exception e) {
+    csv = new Table();  
+    csv.addRow();
+    String[] s = {Integer.toString(score)};
+    csv.setRow(0, s);
+  }
 }  
 
 void mousePressed() {
@@ -314,7 +325,7 @@ void draw() {
         text("Yellow doors give x2 H4POINTS!",rw*50,rh*235);
         fill(225);
         translate(rw*80,rh*(430 + fingerOffset));
-        strokeWeight(30);
+        strokeWeight(rw*30);
         stroke(150);
         line(-rw*100,-rh*140,0,-rh*150);
         line(rw*0,-rh*95,rw*30,-rh*100);
@@ -498,6 +509,17 @@ void checkEndGame() {
     hp = 0;
     levelsCompleted = 0;
     //if (score > highScore) {$.jStorage.set("fgHighScore", score);}
+    if(score > highScore) 
+    { 
+      String[] s = {Integer.toString(score)};
+      csv.setRow(0, s);
+      try {
+        csv.save(new File(sketchPath("") + "data.csv"), "csv");
+      }
+      catch(IOException iox) {
+        println("Failed to write file." + iox.getMessage());  
+      }
+    }
     gameState = 2;
   }
 }
