@@ -264,7 +264,6 @@ boolean checkNeighbor(int xpos, int ypos) {
 }
 
 void draw() {
-  //highScore = $.jStorage.get("fgHighScore", 0);
 
   textSize(int(rh*14));
   if (gameState == 3) {
@@ -485,8 +484,8 @@ void checkEndGame() {
   if (allCheck >= 36) {
     if (doorMode == 1 || doorMode == 2) {hp += round(step);} else {hp += round(step/2);}
     lastColor = cArray[0][0];
-    score += (1 + hp);
     levelsCompleted += 1;
+    score += levelsCompleted;
     cutscene = 300;
     playSound(cont, 1);  // door sound
     sShake[0] = 0;
@@ -508,9 +507,9 @@ void checkEndGame() {
     score += hp;
     hp = 0;
     levelsCompleted = 0;
-    //if (score > highScore) {$.jStorage.set("fgHighScore", score);}
     if(score > highScore) 
     { 
+      highScore = score;
       String[] s = {Integer.toString(score)};
       csv.setRow(0, s);
       try {
