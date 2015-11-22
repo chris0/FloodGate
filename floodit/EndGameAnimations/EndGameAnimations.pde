@@ -1,6 +1,5 @@
 boolean end;
-int cutscene;
-int step;
+int floodCounter, wallCounter, step, endMode;
 float w, h, ow, oh, rw, rh;
 float[] sShake;
 color[][] cArray;    // 2D array of colors
@@ -28,8 +27,10 @@ void setup()
 {
   frameRate(30);
   end = false;
+  endMode = 0;
   step = 0;
-  cutscene = 0;
+  floodCounter = 0;
+  wallCounter = 0;
   cArray = new int[6][6];
       for(int i = 0; i < cArray.length; i++) {
     for(int j = 0; j < cArray[i].length; j++) {
@@ -50,17 +51,18 @@ void setup()
 
 void draw()
 {
-  cutsceneAnim();
+  endBegin();
   endAnimFlood();
+  endAnimWalls();
 }
 
-void cutsceneAnim() {
+void endBegin() {
   if(end == false)
     background(C2);
   fill(C2);
   stroke(30);
   strokeWeight(1);
-  
+
   beginShape();
     vertex(rw*(0),rh*(380));
     vertex(rw*(130),rh*(200));
@@ -68,7 +70,7 @@ void cutsceneAnim() {
     vertex(rw*(340),rh*(380));
     vertex(rw*(0),rh*(380));
   endShape();
-  
+
   beginShape();
     vertex(rw*(0),rh*(0));
     vertex(rw*(130),rh*(100));
@@ -76,7 +78,7 @@ void cutsceneAnim() {
     vertex(rw*(340),rh*(0));
     vertex(rw*(0),rh*(0));
   endShape();
-  
+
   rectMode(CORNER);
   fill(lastC2);
   stroke(lastC2);
@@ -91,7 +93,7 @@ void cutsceneAnim() {
   rectMode(CENTER);
   rect(w/2,3*h/8,rw*2*cArray.length+2,rh*2*cArray.length+2);
   rectMode(CORNER);
-  
+
   for(int i = 0; i < cArray.length; i++) {
     for(int j = 0; j < cArray[i].length; j++) {
       int n = cArray[i][j];
@@ -101,27 +103,103 @@ void cutsceneAnim() {
     }
   }
   
-  image(agent, 13*w/32, 3*h/8, agent.width/3, agent.height/3);
+  image(agent, 13*w/32, 3*h/8, rw*agent.width/7, rh*agent.height/7);
 }
 
 void endAnimFlood()
 {
-  if(end == true)
+  if(end == true && endMode == 0)
   {
     rectMode(CORNERS);
     stroke(#00FFFF, 100);
     fill(#00FFFF, 100);
     beginShape();
-      vertex(rw*(0),rh*380-rh*cutscene);
-      vertex(rw*(130),rh*(200-cutscene/4));
-      vertex(rw*(210),rh*(200-cutscene/4));
-      vertex(rw*(340),rh*380-rh*cutscene);
-      vertex(rw*(0),rh*380-rh*cutscene);
+      vertex(rw*(0),rh*380-rh*floodCounter);
+      vertex(rw*(130),rh*(200-floodCounter/4));
+      vertex(rw*(210),rh*(200-floodCounter/4));
+      vertex(rw*(340),rh*380-rh*floodCounter);
+      vertex(rw*(0),rh*380-rh*floodCounter);
     endShape();    
-    rect(0, rh*380-rh*cutscene, w, rh*380);
-    if(cutscene<381)
-      cutscene += 4;
+    rect(0, rh*380-rh*floodCounter, w, rh*380);
+    if(floodCounter<381)
+      floodCounter += 4;
   }
+}
+
+void endAnimExplosions()
+{
+  if(end == true)
+  {
+      
+  }
+}
+
+void endAnimWalls()
+{
+  if(end == true && endMode == 1)
+  {
+    background(C2);    
+    fill(C2);
+    stroke(30);
+    strokeWeight(1);
+ 
+    beginShape();
+      vertex(rw*wallCounter,rh*(380));
+      vertex(rw*(130+wallCounter/4),rh*(200));
+      vertex(rw*(210-wallCounter/4),rh*(200));
+      vertex(rw*(340-wallCounter),rh*(380));
+      vertex(rw*wallCounter,rh*(380));
+    endShape();
+  
+    beginShape();
+      vertex(rw*wallCounter,rh*(0));
+      vertex(rw*(130+wallCounter/4),rh*(100));
+      vertex(rw*(210-wallCounter/4),rh*(100));
+      vertex(rw*(340-wallCounter),rh*(0));
+      vertex(rw*wallCounter,rh*(0));
+    endShape();
+    
+    if(130+wallCounter/4 < 210-wallCounter/4)
+    {
+      line(rw*(130+wallCounter/4),rh*(200),rw*(130+wallCounter/4),rh*(100));
+      line(rw*(210-wallCounter/4),rh*(200),rw*(210-wallCounter/4),rh*(100));
+      line(rw*(170),rh*(200),rw*(170),rh*(100));
+    }
+    
+    if(rw*agent.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
+      image(agent, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*(210-wallCounter/4)-rw*(130+wallCounter/4), rw*agent.height/7);  
+    else
+      image(agent, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*agent.width/7, rh*agent.height/7);  
+    
+    for(int i = 0; i < cArray.length; i++) {
+      for(int j = 0; j < cArray[i].length; j++) {
+        int n = cArray[i][j];
+        stroke(n);
+        fill(n);
+        rect(rw*(i*2+(ow/2-2*cArray.length/2)), rh*(j*2+(3*oh/8-2*cArray.length/2)), rw*2, rh*2);
+      }
+    }    
+    
+    stroke(30);  
+    noFill();
+    rectMode(CENTER);
+    rect(w/2,3*h/8,rw*2*cArray.length+2,rh*2*cArray.length+2);
+    rectMode(CORNER);     
+        
+    fill(30);    
+    line(rw*wallCounter,0,rw*wallCounter,h);
+    line(rw*(340-wallCounter),0,rw*(340-wallCounter),h);
+    rect(0,0,rw*wallCounter,rh*380);
+    rect(rw*(340-wallCounter),0,w,rh*380);
+  
+    rectMode(CORNER);
+    fill(lastC2);
+    stroke(lastC2);
+    rect(0,rh*(381),rw*340,rh*100);
+  }
+
+  if(wallCounter < 340-wallCounter)
+    wallCounter += 2;
 }
 
 void mousePressed()
@@ -131,7 +209,12 @@ void mousePressed()
   else
   {
     end = false;
-    cutscene = 0;
+    floodCounter = 0;
+    wallCounter = 0;
+    if(endMode == 0)
+      endMode = 1;
+    else
+      endMode = 0;
   }
   println("end: " + end);
 }
