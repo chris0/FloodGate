@@ -1,3 +1,4 @@
+boolean end;
 int cutscene;
 int step;
 float w, h, ow, oh, rw, rh;
@@ -26,8 +27,9 @@ public void settings()
 void setup()
 {
   frameRate(30);
+  end = false;
   step = 0;
-  cutscene = 200;
+  cutscene = 0;
   cArray = new int[6][6];
       for(int i = 0; i < cArray.length; i++) {
     for(int j = 0; j < cArray[i].length; j++) {
@@ -49,12 +51,15 @@ void setup()
 void draw()
 {
   cutsceneAnim();
+  endAnimFlood();
 }
 
 void cutsceneAnim() {
+  if(end == false)
+    background(C2);
   fill(C2);
   stroke(30);
-  strokeWeight(10 - 9);
+  strokeWeight(1);
   
   beginShape();
     vertex(rw*(0),rh*(380));
@@ -72,6 +77,7 @@ void cutsceneAnim() {
     vertex(rw*(0),rh*(0));
   endShape();
   
+  rectMode(CORNER);
   fill(lastC2);
   stroke(lastC2);
   rect(0,rh*(381),rw*340,rh*100);
@@ -96,4 +102,36 @@ void cutsceneAnim() {
   }
   
   image(agent, 13*w/32, 3*h/8, agent.width/3, agent.height/3);
+}
+
+void endAnimFlood()
+{
+  if(end == true)
+  {
+    rectMode(CORNERS);
+    stroke(#00FFFF, 100);
+    fill(#00FFFF, 100);
+    beginShape();
+      vertex(rw*(0),rh*380-rh*cutscene);
+      vertex(rw*(130),rh*(200-cutscene/4));
+      vertex(rw*(210),rh*(200-cutscene/4));
+      vertex(rw*(340),rh*380-rh*cutscene);
+      vertex(rw*(0),rh*380-rh*cutscene);
+    endShape();    
+    rect(0, rh*380-rh*cutscene, w, rh*380);
+    if(cutscene<381)
+      cutscene += 4;
+  }
+}
+
+void mousePressed()
+{
+  if(end == false)
+    end = true;
+  else
+  {
+    end = false;
+    cutscene = 0;
+  }
+  println("end: " + end);
 }
