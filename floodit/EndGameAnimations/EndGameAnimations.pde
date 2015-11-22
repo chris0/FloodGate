@@ -12,6 +12,7 @@ color C5 = color(51);
 color C6 = color(0);
 color lastC2, lastColor;
 color[] colors = {C1, C2, C3, C4, C5, C6};      // 1D array of 6 colors
+PImage agent;
 
 public void settings()
 {
@@ -42,6 +43,7 @@ void setup()
   sShake[1] = 0;
   sShake[2] = 0;
   sShake[3] = 0;
+  agent = loadImage("secretagent.png");
 }
 
 void draw()
@@ -92,4 +94,6 @@ void cutsceneAnim() {
       rect(rw*(i*2+(ow/2-2*cArray.length/2)), rh*(j*2+(3*oh/8-2*cArray.length/2)), rw*2, rh*2);
     }
   }
+  
+  image(agent, 13*w/32, 3*h/8, agent.width/3, agent.height/3);
 }
