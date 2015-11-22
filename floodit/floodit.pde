@@ -447,9 +447,9 @@ void draw() {
       vertex(rw*150,0);
     endShape();
     textSize(int(rh*14));
-    text("H4CK 0.95.1", -rw*90,-rh*110); 
+    text("  H4CKP4D", -rw*90,-rh*110); 
     textSize(int(rh*13));
-    text(hp + " H4P01NTS", -rw*90,-rh*70); 
+    text(hp + "H4CKP01NTS", -rw*90,-rh*70); 
     fill(225);
     ellipse(-rw*50,-rh*25,rw*40,rh*40);
     textSize(int(rh*13));
