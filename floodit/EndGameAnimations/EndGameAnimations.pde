@@ -1,6 +1,6 @@
 boolean end;
-int floodCounter, wallCounter, step, endMode;
-float w, h, ow, oh, rw, rh;
+int floodCounter, wallCounter, step, endMode, explosionCounter, explosionSeqCounter;
+float w, h, ow, oh, rw, rh, xcoord, ycoord;
 float[] sShake;
 color[][] cArray;    // 2D array of colors
 // Color assignments
@@ -12,7 +12,8 @@ color C5 = color(51);
 color C6 = color(0);
 color lastC2, lastColor;
 color[] colors = {C1, C2, C3, C4, C5, C6};      // 1D array of 6 colors
-PImage agent;
+PImage agent; 
+PImage[] explodeImg;
 
 public void settings()
 {
@@ -31,6 +32,8 @@ void setup()
   step = 0;
   floodCounter = 0;
   wallCounter = 0;
+  explosionCounter = 0;
+  explosionSeqCounter = 26;
   cArray = new int[6][6];
       for(int i = 0; i < cArray.length; i++) {
     for(int j = 0; j < cArray[i].length; j++) {
@@ -47,6 +50,16 @@ void setup()
   sShake[2] = 0;
   sShake[3] = 0;
   agent = loadImage("secretagent.png");
+  explodeImg = new PImage[9]; 
+  explodeImg[0] = loadImage("explosion1.png");
+  explodeImg[1] = loadImage("explosion2.png");
+  explodeImg[2] = loadImage("explosion3.png");
+  explodeImg[3] = loadImage("explosion4.png");
+  explodeImg[4] = loadImage("explosion5.png");
+  explodeImg[5] = loadImage("explosion6.png");
+  explodeImg[6] = loadImage("explosion7.png");
+  explodeImg[7] = loadImage("explosion8.png");
+  explodeImg[8] = loadImage("explosion9.png");
 }
 
 void draw()
@@ -54,10 +67,11 @@ void draw()
   endBegin();
   endAnimFlood();
   endAnimWalls();
+  endAnimExplosions();
 }
 
 void endBegin() {
-  if(end == false)
+  if(end == false || (end == true && endMode == 2))
     background(C2);
   fill(C2);
   stroke(30);
@@ -102,7 +116,7 @@ void endBegin() {
       rect(rw*(i*2+(ow/2-2*cArray.length/2)), rh*(j*2+(3*oh/8-2*cArray.length/2)), rw*2, rh*2);
     }
   }
-  
+  imageMode(CORNER);
   image(agent, 13*w/32, 3*h/8, rw*agent.width/7, rh*agent.height/7);
 }
 
@@ -111,8 +125,8 @@ void endAnimFlood()
   if(end == true && endMode == 0)
   {
     rectMode(CORNERS);
-    stroke(#00FFFF, 100);
-    fill(#00FFFF, 100);
+    stroke(#00FFFF, 200);
+    fill(#00FFFF, 200);
     beginShape();
       vertex(rw*(0),rh*380-rh*floodCounter);
       vertex(rw*(130),rh*(200-floodCounter/4));
@@ -122,15 +136,21 @@ void endAnimFlood()
     endShape();    
     rect(0, rh*380-rh*floodCounter, w, rh*380);
     if(floodCounter<381)
-      floodCounter += 4;
+      floodCounter += 8;
   }
 }
 
 void endAnimExplosions()
 {
-  if(end == true)
+  if(end == true && endMode == 2)
   {
-      
+    if(explosionSeqCounter > 0)
+    { 
+      if(explosionSeqCounter%3 == 0)
+        explosionCounter++;
+      explosion(w/2, 3*h/8, explosionCounter);  
+      explosionSeqCounter--;  
+    }
   }
 }
 
@@ -167,9 +187,15 @@ void endAnimWalls()
     }
     
     if(rw*agent.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
+    {
+      imageMode(CORNER);
       image(agent, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*(210-wallCounter/4)-rw*(130+wallCounter/4), rw*agent.height/7);  
+    }
     else
+    {
+      imageMode(CORNER);
       image(agent, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*agent.width/7, rh*agent.height/7);  
+    }
     
     for(int i = 0; i < cArray.length; i++) {
       for(int j = 0; j < cArray[i].length; j++) {
@@ -189,6 +215,7 @@ void endAnimWalls()
     fill(30);    
     line(rw*wallCounter,0,rw*wallCounter,h);
     line(rw*(340-wallCounter),0,rw*(340-wallCounter),h);
+    fill(C2);
     rect(0,0,rw*wallCounter,rh*380);
     rect(rw*(340-wallCounter),0,w,rh*380);
   
@@ -199,13 +226,20 @@ void endAnimWalls()
   }
 
   if(wallCounter < 340-wallCounter)
-    wallCounter += 2;
+    if(rw*agent.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
+      wallCounter += 20;
+    else
+      wallCounter += 4;
 }
 
 void mousePressed()
 {
   if(end == false)
+  {
     end = true;
+    xcoord = random(rw*(ow/2-40), rw*(ow/2+40));
+    ycoord = random(rh*(oh/2-50), rh*(oh/2+50));
+  }
   else
   {
     end = false;
@@ -213,8 +247,22 @@ void mousePressed()
     wallCounter = 0;
     if(endMode == 0)
       endMode = 1;
+    else if(endMode == 1)
+      endMode = 2;
     else
+    {
       endMode = 0;
+      explosionSeqCounter = 26;
+      explosionCounter = 0;
+    }
   }
   println("end: " + end);
+}
+
+void explosion(float x, float y, int counter)
+{
+  float xsize = rw*explodeImg[counter].width+counter*10*rw;
+  float ysize = rh*explodeImg[counter].height+counter*10*rh;
+  imageMode(CENTER);
+  image(explodeImg[counter], x, y, xsize, ysize);
 }
