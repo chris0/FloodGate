@@ -1,6 +1,7 @@
 boolean end;
 int floodCounter, wallCounter, step, endMode, explosionCounter, explosionSeqCounter;
 float w, h, ow, oh, rw, rh, xcoord, ycoord;
+float bubble1x, bubble2x, bubble3x, bubble1y, bubble2y, bubble3y;
 float[] sShake;
 color[][] cArray;    // 2D array of colors
 // Color assignments
@@ -12,7 +13,7 @@ color C5 = color(51);
 color C6 = color(0);
 color lastC2, lastColor;
 color[] colors = {C1, C2, C3, C4, C5, C6};      // 1D array of 6 colors
-PImage agent; 
+PImage player, playerBurnt; 
 PImage[] explodeImg;
 
 public void settings()
@@ -49,7 +50,8 @@ void setup()
   sShake[1] = 0;
   sShake[2] = 0;
   sShake[3] = 0;
-  agent = loadImage("secretagent.png");
+  player = loadImage("player.png");
+  playerBurnt = loadImage("playerburnt.png");
   explodeImg = new PImage[9]; 
   explodeImg[0] = loadImage("explosion1.png");
   explodeImg[1] = loadImage("explosion2.png");
@@ -60,6 +62,8 @@ void setup()
   explodeImg[6] = loadImage("explosion7.png");
   explodeImg[7] = loadImage("explosion8.png");
   explodeImg[8] = loadImage("explosion9.png");
+  bubble1x = w/2-rw*17;
+  bubble1y = h/2-rh*44;
 }
 
 void draw()
@@ -117,7 +121,10 @@ void endBegin() {
     }
   }
   imageMode(CORNER);
-  image(agent, 13*w/32, 3*h/8, rw*agent.width/7, rh*agent.height/7);
+  if(explosionSeqCounter>=26)
+    image(player, 13*w/32, 3*h/8, rw*player.width/7, rh*player.height/7);
+  else
+    image(playerBurnt, 13*w/32, 3*h/8, rw*player.width/7, rh*player.height/7);
 }
 
 void endAnimFlood()
@@ -125,15 +132,15 @@ void endAnimFlood()
   if(end == true && endMode == 0)
   {
     rectMode(CORNERS);
-    stroke(#00FFFF, 200);
-    fill(#00FFFF, 200);
+    stroke(#00FFFF, 100);
+    fill(#00FFFF, 100);
     beginShape();
       vertex(rw*(0),rh*380-rh*floodCounter);
       vertex(rw*(130),rh*(200-floodCounter/4));
       vertex(rw*(210),rh*(200-floodCounter/4));
       vertex(rw*(340),rh*380-rh*floodCounter);
       vertex(rw*(0),rh*380-rh*floodCounter);
-    endShape();    
+    endShape();      
     rect(0, rh*380-rh*floodCounter, w, rh*380);
     if(floodCounter<381)
       floodCounter += 8;
@@ -186,15 +193,15 @@ void endAnimWalls()
       line(rw*(170),rh*(200),rw*(170),rh*(100));
     }
     
-    if(rw*agent.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
+    if(rw*player.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
     {
       imageMode(CORNER);
-      image(agent, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*(210-wallCounter/4)-rw*(130+wallCounter/4), rw*agent.height/7);  
+      image(player, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*(210-wallCounter/4)-rw*(130+wallCounter/4), rw*player.height/7);  
     }
     else
     {
       imageMode(CORNER);
-      image(agent, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*agent.width/7, rh*agent.height/7);  
+      image(player, (13*w/32)+rw*wallCounter/10+wallCounter/4, 3*h/8, rw*player.width/7, rh*player.height/7);  
     }
     
     for(int i = 0; i < cArray.length; i++) {
@@ -226,7 +233,7 @@ void endAnimWalls()
   }
 
   if(wallCounter < 340-wallCounter)
-    if(rw*agent.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
+    if(rw*player.width/7>rw*(210-wallCounter/4)-rw*(130+wallCounter/4))
       wallCounter += 20;
     else
       wallCounter += 4;
@@ -261,6 +268,9 @@ void mousePressed()
 
 void explosion(float x, float y, int counter)
 {
+  fill(50);
+  rectMode(CENTER);
+  rect(w/2,3*h/8,rw*2*cArray.length+2,rh*2*cArray.length+2);       
   float xsize = rw*explodeImg[counter].width+counter*10*rw;
   float ysize = rh*explodeImg[counter].height+counter*10*rh;
   imageMode(CENTER);
