@@ -161,6 +161,20 @@ void endAnimExplosions()
   }
 }
 
+void endAnimExplosions()
+{
+  if(end == true && endMode == 2)
+  {
+    if(explosionSeqCounter > 0)
+    { 
+      if(explosionSeqCounter%3 == 0)
+        explosionCounter++;
+      explosion(w/2, 3*h/8, explosionCounter);  
+      explosionSeqCounter--;  
+    }
+  }
+}
+
 void endAnimWalls()
 {
   if(end == true && endMode == 1)
