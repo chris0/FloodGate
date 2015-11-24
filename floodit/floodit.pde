@@ -69,7 +69,7 @@ public void settings()
 void setup() {
   frameRate(30);
   end = false;
-  endSceneIntroCounter = 3;
+  endSceneIntroCounter = 15;
   floodCounter = 0;
   wallCounter = 0;
   explosionCounter = 0;
@@ -813,9 +813,9 @@ void explosion(float x, float y, int counter)
 
 void endBegin() {
   //if(end == false || (end == true && endMode == 2))
+  background(C2);  
   if(endSceneIntroCounter > 0)
   {
-    background(C2);
     endSceneIntroCounter--;
   }
   fill(C2);
@@ -838,10 +838,24 @@ void endBegin() {
     vertex(rw*(0),rh*(0));
   endShape();
 
+  beginShape();
+    vertex(rw*(0),rh*(0));
+    vertex(rw*(0),rh*(380));
+    vertex(rw*(130), rh*(200));
+    vertex(rw*(130), rh*(100));
+    vertex(rw*(0), rh*(0));
+  endShape();
+  
+  beginShape();
+    vertex(rw*(340), rh*(0));
+    vertex(rw*(340), rh*(380));
+    vertex(rw*(210), rh*(200));
+    vertex(rw*(210), rh*(100));
+    vertex(rw*(340), rh*(0));
+  endShape();
+
   rectMode(CORNER);
-  fill(lastC2);
-  stroke(lastC2);
-  rect(0,rh*(381),rw*340,rh*100);
+  rect(rw*(0), rh*(380), w, rh*(40));
   stroke(30);  
     
   line(rw*(130),rh*(200),rw*(130),rh*(100));
@@ -907,8 +921,8 @@ void endAnimFlood()
       vertex(rw*(0),rh*380-rh*floodCounter);
     endShape();      
     rect(0, rh*380-rh*floodCounter, w, rh*380);
-    if(floodCounter<381)
-      floodCounter += 8;
+    if(floodCounter<h)
+      floodCounter += rh*3;
     else
       reset();
   }
@@ -1003,7 +1017,7 @@ void reset()
     end = false;
     floodCounter = 0;
     wallCounter = 0;
-    endSceneIntroCounter = 3;
+    endSceneIntroCounter = 15;
     if(endMode == 0)
       endMode = 1;
     else if(endMode == 1)
