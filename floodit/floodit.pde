@@ -9,8 +9,8 @@ int streamId;
 MediaPlayer bgm;
 SoundPool soundPool;
 HashMap<Object, Object> soundPoolMap;
-Activity act1, act2;
-Context cont1, cont2;
+Activity act;
+Context cont;
 AssetFileDescriptor music, doorsound, blipsound, watersound, accesssound, failuresound, explosionsound;
 PlayMusic playmusic = new PlayMusic(this);
 PFont font;
@@ -87,17 +87,15 @@ void setup() {
   explodeImg[6] = loadImage("explosion7.png");
   explodeImg[7] = loadImage("explosion8.png");
   explodeImg[8] = loadImage("explosion9.png");  
-  act1 = this.getActivity();
-  act2 = this.getActivity();
-  cont1 = act1.getApplicationContext();
-  cont2 = act2.getApplicationContext();
+  act = this.getActivity();
+  cont = act.getApplicationContext();
   try {  
-    doorsound = cont1.getAssets().openFd("door.mp3");
-    blipsound = cont1.getAssets().openFd("sfx.mp3");
-    watersound = cont1.getAssets().openFd("watersound.mp3");
-    accesssound = cont1.getAssets().openFd("access.mp3");
-    failuresound = cont1.getAssets().openFd("buzzer.mp3");
-    explosionsound = cont1.getAssets().openFd("explosionsound.mp3");       
+    doorsound = cont.getAssets().openFd("door.mp3");
+    blipsound = cont.getAssets().openFd("sfx.mp3");
+    watersound = cont.getAssets().openFd("watersound.mp3");
+    accesssound = cont.getAssets().openFd("access.mp3");
+    failuresound = cont.getAssets().openFd("buzzer.mp3");
+    explosionsound = cont.getAssets().openFd("explosionsound.mp3");       
   }
   catch(IOException e)
   {
@@ -358,9 +356,8 @@ void draw() {
           fill(225);
           translate(rw*80,rh*(430 + fingerOffset));
           strokeWeight(rw*30);
-          stroke(150);
-          line(-rw*100,-rh*140,0,-rh*150);
-          line(rw*0,-rh*95,rw*30,-rh*100);
+          stroke(30);
+          line(-rw*100,-rh*110,0,-rh*150);
           stroke(0);
           strokeWeight(5);
           rotate(10/57.3);
@@ -386,7 +383,8 @@ void draw() {
           text("+ " + round(hp/2), -rw*60,-rh*22); 
           rotate(-10/57.3);
           strokeWeight(rw*30);
-          stroke(150);
+          stroke(30);
+          line(rw*0,-rh*95,rw*30,-rh*100);
           line(rw*30,-rh*100,rw*30,-rh*100);
           line(rw*30,-rh*70,rw*15,-rh*60);
           translate(-rw*80,-rh*430 - fingerOffset);
@@ -459,8 +457,8 @@ void draw() {
       fill(225);
       translate(rw*80,rh*(430 + fingerOffset));
       strokeWeight(rw*30);
-      stroke(150);
-      line(-rw*100,-rh*140,0,-rh*150);
+      stroke(30);
+      line(-rw*100,-rh*110,0,-rh*150);
       stroke(0);
       strokeWeight(5);
       rotate(10/57.3);
@@ -485,7 +483,7 @@ void draw() {
       text("+ " + round(hp/2), -rw*60,-rh*22); 
       rotate(-10/57.3);
       strokeWeight(rw*30);
-      stroke(150);
+      stroke(30);
       line(0,-rh*95,rw*30,-rh*100);
       line(rw*30,-rh*100,rw*30,-rh*100);
       line(rw*30,-rh*70,rw*15,-rh*60);
@@ -811,7 +809,7 @@ public class PlayMusic implements Runnable
     try
     {
       bgm = new MediaPlayer();    
-      music = cont2.getAssets().openFd("DarkMystery.mp3");      
+      music = cont.getAssets().openFd("DarkMystery.mp3");      
       bgm.setDataSource(music.getFileDescriptor(), 0, 2623783);  
       bgm.prepare();    
       bgm.setLooping(true);      
