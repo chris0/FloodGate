@@ -9,8 +9,8 @@ int streamId;
 MediaPlayer bgm;
 SoundPool soundPool;
 HashMap<Object, Object> soundPoolMap;
-Activity act;
-Context cont;
+Activity act1, act2;
+Context cont1, cont2;
 AssetFileDescriptor music, doorsound, blipsound, watersound, accesssound, failuresound, explosionsound;
 PlayMusic playmusic = new PlayMusic(this);
 PFont font;
@@ -87,23 +87,24 @@ void setup() {
   explodeImg[6] = loadImage("explosion7.png");
   explodeImg[7] = loadImage("explosion8.png");
   explodeImg[8] = loadImage("explosion9.png");  
-  act = this.getActivity();
-  cont = act.getApplicationContext();
+  act1 = this.getActivity();
+  act2 = this.getActivity();
+  cont1 = act1.getApplicationContext();
+  cont2 = act2.getApplicationContext();
   try {  
-    doorsound = cont.getAssets().openFd("door.mp3");
-    blipsound = cont.getAssets().openFd("sfx.mp3");
-    watersound = cont.getAssets().openFd("watersound.mp3");
-    accesssound = cont.getAssets().openFd("access.mp3");
-    failuresound = cont.getAssets().openFd("buzzer.mp3");
-    explosionsound = cont.getAssets().openFd("explosionsound.mp3");
-    initSounds();
-    //bgm.start();       
+    doorsound = cont1.getAssets().openFd("door.mp3");
+    blipsound = cont1.getAssets().openFd("sfx.mp3");
+    watersound = cont1.getAssets().openFd("watersound.mp3");
+    accesssound = cont1.getAssets().openFd("access.mp3");
+    failuresound = cont1.getAssets().openFd("buzzer.mp3");
+    explosionsound = cont1.getAssets().openFd("explosionsound.mp3");       
   }
   catch(IOException e)
   {
     println("File did not load");
-  }  
+  }    
   playmusic.run();
+  initSounds();  
   levelsCompleted = 0;
   fingerOffset = 0;
   cArray = new int[6][6];
@@ -810,8 +811,8 @@ public class PlayMusic implements Runnable
     try
     {
       bgm = new MediaPlayer();    
-      music = cont.getAssets().openFd("DarkMystery.mp3");      
-      bgm.setDataSource(music.getFileDescriptor());  
+      music = cont2.getAssets().openFd("DarkMystery.mp3");      
+      bgm.setDataSource(music.getFileDescriptor(), 0, 2623783);  
       bgm.prepare();    
       bgm.setLooping(true);      
     }
