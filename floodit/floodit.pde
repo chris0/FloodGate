@@ -12,6 +12,7 @@ HashMap<Object, Object> soundPoolMap;
 Activity act;
 Context cont;
 AssetFileDescriptor music, doorsound, blipsound, watersound, accesssound, failuresound, explosionsound;
+PlayMusic playmusic = new PlayMusic(this);
 PFont font;
 Table csv;
 
@@ -96,17 +97,13 @@ void setup() {
     failuresound = cont.getAssets().openFd("buzzer.mp3");
     explosionsound = cont.getAssets().openFd("explosionsound.mp3");
     initSounds();
-    bgm = new MediaPlayer();    
-    music = cont.getAssets().openFd("DarkMystery.mp3");      
-    bgm.setDataSource(music.getFileDescriptor());  
-    bgm.prepare();    
-    bgm.setLooping(true);
-    bgm.start();       
+    //bgm.start();       
   }
   catch(IOException e)
   {
     println("File did not load");
   }  
+  playmusic.run();
   levelsCompleted = 0;
   fingerOffset = 0;
   cArray = new int[6][6];
@@ -791,6 +788,50 @@ void playSound(int soundID)
   if(soundPool == null || soundPoolMap == null)
     initSounds();
   streamId = soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
+}
+
+public class PlayMusic implements Runnable
+{
+  Thread thread;
+  
+  public PlayMusic(PApplet parent)
+  {
+    parent.registerDispose(this);
+  }
+    
+  public void start()
+  {
+    thread = new Thread(this);
+    thread.start();
+  }
+  
+  public void run()
+  {
+    try
+    {
+      bgm = new MediaPlayer();    
+      music = cont.getAssets().openFd("DarkMystery.mp3");      
+      bgm.setDataSource(music.getFileDescriptor());  
+      bgm.prepare();    
+      bgm.setLooping(true);      
+    }
+    catch(IOException e)
+    {
+      println("File did not load");
+    }      
+    bgm.start();  
+  }
+  
+  public void stop()
+  {
+    thread = null;  
+  }
+  
+  public void dispose()
+  {
+    stop();  
+  }
+  
 }
 
 boolean between(float pos, float min, float max)
