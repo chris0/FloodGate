@@ -5,19 +5,20 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.media.AudioManager;
 
+int streamId;
 MediaPlayer bgm;
 SoundPool soundPool;
 HashMap<Object, Object> soundPoolMap;
 Activity act;
 Context cont;
-AssetFileDescriptor music, sound1, sound2;
+AssetFileDescriptor music, doorsound, blipsound, watersound, accesssound, failuresound, explosionsound;
 PFont font;
 Table csv;
 
 int w, h;            // width and height of window
 float ow, oh;          // original height and width for scaling
 float rw, rh;          // width scaling coefficient, height scaling coefficient
-int s1, s2;          // a variable to hold index of sound in soundPool
+int s1, s2, s3, s4, s5, s6;          // a variable to hold index of sound in soundPool
 int hp;              // a variable to keep track of currency
 float fingerPress;     // a variable to keep track of pressing animation
 int fingerOffset;    // a variable to smooth things after cutscene
@@ -52,8 +53,7 @@ color lastC2;
 
 boolean end;
 int floodCounter, wallCounter, endMode, explosionCounter, explosionSeqCounter, endSceneIntroCounter;
-float xcoord, ycoord;
-float bubble1x, bubble2x, bubble3x, bubble1y, bubble2y, bubble3y;
+float explosionxcoord, explosionycoord;
 PImage player, playerBurnt; 
 PImage[] explodeImg;
 
@@ -88,25 +88,26 @@ void setup() {
   explodeImg[8] = loadImage("explosion9.png");  
   act = this.getActivity();
   cont = act.getApplicationContext();
-  try {
+  try {  
+    doorsound = cont.getAssets().openFd("door.mp3");
+    blipsound = cont.getAssets().openFd("sfx.mp3");
+    watersound = cont.getAssets().openFd("watersound.mp3");
+    accesssound = cont.getAssets().openFd("access.mp3");
+    failuresound = cont.getAssets().openFd("buzzer.mp3");
+    explosionsound = cont.getAssets().openFd("explosionsound.mp3");
+    initSounds();
     bgm = new MediaPlayer();    
-    music = cont.getAssets().openFd("DarkMystery.mp3");    
-    sound1 = cont.getAssets().openFd("door.mp3");
-    sound2 = cont.getAssets().openFd("sfx.mp3");
+    music = cont.getAssets().openFd("DarkMystery.mp3");      
     bgm.setDataSource(music.getFileDescriptor());  
-    bgm.prepare();  
-    initSounds(cont);
+    bgm.prepare();    
+    bgm.setLooping(true);
+    bgm.start();       
   }
   catch(IOException e)
   {
     println("File did not load");
-  }
-  bgm.setLooping(true);
-  bgm.start();
+  }  
   levelsCompleted = 0;
-  //int b, i, j;
-  //color c;
-  //noCursor();
   fingerOffset = 0;
   cArray = new int[6][6];
   sArray = new boolean[6][6];
@@ -169,11 +170,11 @@ void mousePressed() {
     //if (mouseX.between(130,205) && mouseY.between(375,450) && tutLevel == 1){gameState = 0;}
     if(mouseX>rw*130 && mouseX<rw*205 && mouseY>rh*375 && mouseY<rh*450 && tutLevel == 1) {gameState = 0;}
     fingerPress = 30;
-    playSound(cont, 2);
+    playSound(2);
     //if (tutLevel == 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(tutLevel == 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
       color f;  //color c, f;   
-      playSound(cont, 2);
+      playSound(2);
       f = get(mouseX, mouseY);
         
       int xpos = 0;
@@ -226,7 +227,7 @@ void mousePressed() {
     //if (cutscene >= 0 && mouseX.between(95,245) && mouseY.between(95,245)) {
     if(cutscene >= 0 && mouseX>rw*95 && mouseX<rw*245 && mouseY>rh*95 && mouseY<rh*245) {
       color f; //color c, f;   
-      playSound(cont, 2);
+      playSound(2);
       f = get(mouseX, mouseY);
       
       if ((doorMode == 0 || doorMode == 1) && f != cArray[0][0]) {step -= 1;}
@@ -519,7 +520,8 @@ void checkEndGame() {
     levelsCompleted += 1;
     score += levelsCompleted;
     cutscene = 300;
-    playSound(cont, 1);  // door sound
+    playSound(3);
+    playSound(1);  // door sound
     sShake[0] = 0;
     sShake[1] = 0;
     sShake[2] = 0;
@@ -536,6 +538,7 @@ void checkEndGame() {
     sArray[0][0] = true; 
   }
   if(step <= 0 && allCheck < 36) {
+    playSound(4);
     score += hp;
     hp = 0;
     levelsCompleted = 0;
@@ -771,19 +774,23 @@ class Pcle {
   }
 }
 
-void initSounds(Context cont)
+void initSounds()
 {
-  soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 100);
-  soundPoolMap = new HashMap<Object, Object>(2);
-  soundPoolMap.put(s1, soundPool.load(sound1, 1));
-  soundPoolMap.put(s2, soundPool.load(sound2, 2));
+  soundPool = new SoundPool(12, AudioManager.STREAM_MUSIC, 0);
+  soundPoolMap = new HashMap<Object, Object>(6);
+  soundPoolMap.put(s1, soundPool.load(doorsound, 1));
+  soundPoolMap.put(s2, soundPool.load(blipsound, 1));
+  soundPoolMap.put(s3, soundPool.load(accesssound, 1));
+  soundPoolMap.put(s4, soundPool.load(failuresound, 1));
+  soundPoolMap.put(s5, soundPool.load(watersound, 1));
+  soundPoolMap.put(s6, soundPool.load(explosionsound, 1));
 }
 
-void playSound(Context cont, int soundID)
+void playSound(int soundID)
 {
   if(soundPool == null || soundPoolMap == null)
-    initSounds(cont);
-  soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
+    initSounds();
+  streamId = soundPool.play(soundID, 1.0, 1.0, 1, 0, 1f);
 }
 
 boolean between(float pos, float min, float max)
@@ -797,6 +804,7 @@ public void onDestroy()
   if(bgm != null)
   {
     bgm.release();
+    soundPool.release();
   }
 }
 
@@ -892,6 +900,8 @@ void endAnimExplosions()
 {
   if(end == true && endMode == 2)
   {
+    if(explosionSeqCounter == 26)
+      playSound(6);
     if(explosionSeqCounter > 0)
     { 
       if(explosionSeqCounter%3 == 0)
@@ -910,6 +920,8 @@ void endAnimFlood()
 {
   if(end == true && endMode == 0)
   {
+    if(floodCounter == 0)
+      playSound(5);
     rectMode(CORNERS);
     stroke(#00FFFF, 100);
     fill(#00FFFF, 100);
