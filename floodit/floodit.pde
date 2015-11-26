@@ -399,14 +399,16 @@ void draw() {
   
     if (gameState == 0 || gameState == 2) {
       background(225);
+      textAlign(CORNER);
       fill(30);
       textSize(int(rh*30));
       text("Start",rw*135,rh*210);
       text("Help",rw*136,rh*280);
       textSize(int(rh*35));
-      text("Floodgate Dungeon",rw*15,rh*150);
+      text("Floodgate Dungeon",rw*15,rh*140);
       strokeWeight(1);
       fill(0,0);
+      stroke(30);
       rect(rw*130,rh*185,rw*75,rh*30);
       rect(rw*130,rh*255,rw*75,rh*30);
       fill(30);
@@ -417,7 +419,7 @@ void draw() {
     if (gameState == 2) {
       fill(30);
       textSize(int(rh*20));
-      text("Score: " + score,rw*140,rh*370);
+      text("Last Score: " + score,rw*110,rh*370);
     }
       
     if (gameState == 1) {
@@ -473,9 +475,10 @@ void draw() {
         vertex(rw*150,0);
       endShape();
       textSize(int(rh*14));
-      text("  H4CKP4D", -rw*90,-rh*110); 
+      text("   SC0RE", -rw*90,-rh*110); 
+      text("     " + score, -rw*90, -rh*90);
       textSize(int(rh*13));
-      text(hp + "H4CKP01NTS", -rw*90,-rh*70); 
+      text("H4CKP01NTS", -rw*90,-rh*60); 
       fill(225);
       ellipse(-rw*50,-rh*25,rw*40,rh*40);
       textSize(int(rh*13));
