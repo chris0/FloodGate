@@ -19,6 +19,13 @@ android {
 }
 
 dependencies {
-    compile files('libs/processing-core.jar')
+    compile files('libs/processing-core.jar',
+            'libs/applovin-6.1.4.jar',
+            'libs/appodeal-1.13.10.jar',
+            'libs/chartboost-6.0.2.jar',
+            'libs/inmobi-5.0.1.jar',
+            'libs/my-target-4.1.2.jar',
+            'libs/units-ads-1.4.7.jar',
+            'libs/yandex-metrica-android-2.00.jar')
     compile 'com.google.android.gms:play-services-ads:8.3.0'
 }
